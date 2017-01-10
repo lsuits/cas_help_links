@@ -25,16 +25,21 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
+    
+    'local/cas_help_links:editglobalsettings' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        ),
+    ),
 
-    // @TODO: set permissions here?
+    'local/cas_help_links:editcategorysettings' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        ),
+    ),
 
-    // 'local/cas_help_links:myaddinstance' => array(
-    //     'captype' => 'write',
-    //     'contextlevel' => CONTEXT_SYSTEM,
-    //     'archetypes' => array(
-    //         'user' => CAP_ALLOW
-    //     ),
-
-    //     'clonepermissionsfrom' => 'moodle/my:manageblocks'
-    // ),
 );

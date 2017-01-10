@@ -3,31 +3,34 @@
 class local_cas_help_links_url_generator {
 
     /**
-     * Returns an array that includes data about the appropriate CAS Help link to be displayed for this course
+     * Returns an array that includes data about the appropriate CAS Help link to be displayed for this course/user
      * 
      * @param  object $course  moodle course object
+     * @param  bool $editLinkForInstructor  if true, will return a link to edit this setting
      * @return array  display|url|label
      */
-    public static function getUrlArrayForCourse($course)
+    public static function getUrlArrayForCourse($course, $editLinkForInstructor = true)
     {
+        // if this plugin is disabled, do not display
+        if ( ! self::isPluginEnabled())
+            return self::getEmptyUrlArray();
+        
         $course_id = $course->id;
         $category_id = $course->category;
 
-        // get this course's primary instructor user id
+        // if we can't find a primary instructor for the given course, do not display
         if ( ! $primary_instructor_user_id = self::getPrimaryInstructorId($course->idnumber)) {
-            $urlArray = [
-                'display' => false,
-                'url' => '',
-                'label' => '',
-            ];
-
-            return $urlArray;
+            return self::getEmptyUrlArray();
         }
 
-        // return edit link if primary instructor is requesting, otherwise display preferred links
-        return ($primary_instructor_user_id == self::getAuthUserId()) ? 
-            self::getCourseEditHelpUrlArray($course) : 
-            self::getDisplayHelpUrlArray($course_id, $category_id, $primary_instructor_user_id);
+        // if primary instructor is requesting
+        if ($primary_instructor_user_id == self::getAuthUserId() && $editLinkForInstructor) {
+            // return edit link
+            return self::getCourseEditHelpUrlArray($course);
+        } else {
+            //  otherwise return link pref data
+            return self::getDisplayHelpUrlArray($course_id, $category_id, $primary_instructor_user_id);
+        }
     }
 
     /**
@@ -40,8 +43,8 @@ class local_cas_help_links_url_generator {
     {
         $urlArray = [
             'display' => true,
-            'url' => '/local/cas_help_links/settings.php',
-            'label' => 'Edit Help Settings',
+            'url' => '/local/cas_help_links/user_settings.php?id=' . self::getAuthUserId(), // @TODO - make this happen
+            'label' => get_string('settings_button_label', 'local_cas_help_links'),
         ];
 
         return $urlArray;
@@ -63,12 +66,13 @@ class local_cas_help_links_url_generator {
             $urlArray = self::getDefaultHelpUrlArray();
         } else {
             // otherwise, convert the selected pref result to a single object
-            $selectedPref = reset($selectedPref); // @TODO - should be no multiple results confusion here, but watch
+            $selectedPref = reset($selectedPref); // @WATCH - should be no multiple results confusion here
 
             $urlArray = [
                 'display' => $selectedPref->display,
                 'url' => $selectedPref->link,
-                'label' => 'Help', // @TODO - get appropriate label here
+                'label' => get_string('help_button_label', 'local_cas_help_links'),
+                'link_id' => $selectedPref->id,
             ];
         }
 
@@ -82,14 +86,12 @@ class local_cas_help_links_url_generator {
      */
     private static function getDefaultHelpUrlArray()
     {
-        // @TODO - use global config settings to build array below
-        $urlArray = [
-            'display' => true,
-            'url' => 'http://default-example.com',
-            'label' => 'Help',
+        return [
+            'display' => self::isPluginEnabled(),
+            'url' => get_config('local_cas_help_links', 'default_help_link'),
+            'label' => get_string('help_button_label', 'local_cas_help_links'),
+            'link_id' => ''
         ];
-
-        return $urlArray;
     }
 
     /**
@@ -282,6 +284,31 @@ class local_cas_help_links_url_generator {
         $whereClause = substr($whereClause, 0, -4);
 
         return $whereClause;
+    }
+
+    /**
+     * Returns whether or not this plugin is enabled based off plugin config
+     * 
+     * @return boolean
+     */
+    private static function isPluginEnabled()
+    {
+        return (bool) get_config('local_cas_help_links', 'show_links_global');
+    }
+
+    /**
+     * Returns a default, "empty" URL array
+     * 
+     * @return array
+     */
+    private static function getEmptyUrlArray()
+    {
+        return [
+            'display' => false,
+            'url' => '',
+            'label' => '',
+            'link_id' => 0
+        ];
     }
 }
 

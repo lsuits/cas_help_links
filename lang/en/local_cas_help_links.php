@@ -24,3 +24,16 @@
 
 $string['pluginname'] = 'CAS Help Links';
 $string['pluginname_desc'] = 'This local plugin contains support libraries for rendering helpful resource links for a given course.';
+
+$string['cas_help_links:editglobalsettings'] = 'Edit Global Settings';
+$string['cas_help_links:editcategorysettings'] = 'Edit Department Settings';
+
+$string['help_button_label'] = 'Help';
+$string['settings_button_label'] = 'Edit Help Settings';
+
+$string['setting_show_links_global_title'] = 'Enable CAS Help Links';
+$string['setting_show_links_global_description'] = 'Choose whether or not to display CAS Help Links site-wide.';
+
+$string['setting_default_help_link_title'] = 'Default CAS Help URL';
+$string['setting_default_help_link_description'] = 'A default "catch-all" URL that will be displayed if no other relative links.';
+$string['setting_default_help_link_default'] = 'https://moodle.org';
