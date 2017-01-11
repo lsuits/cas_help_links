@@ -45,7 +45,7 @@ class local_cas_help_links_url_generator {
         
         $urlArray = [
             'display' => true,
-            'url' => $CFG->wwwroot . '/local/cas_help_links/user_settings.php?id=' . \local_cas_help_links_utility::getAuthUserId(), // @TODO - make this happen
+            'url' => $CFG->wwwroot . '/local/cas_help_links/user_settings.php?id=' . \local_cas_help_links_utility::getAuthUserId(),
             'label' => get_string('settings_button_label', 'local_cas_help_links'),
         ];
 
