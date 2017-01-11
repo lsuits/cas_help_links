@@ -39,7 +39,7 @@ require_login();
 require_capability('local/cas_help_links:editglobalsettings', $context);
 
 // make sure that the user being referenced is the auth user
-if ($USER->id != $user_id && !has_capability('moodle/course:create', $context)) {
+if ($USER->id != $user_id) {
     echo 'sorry, no';
     // redirect (SOME URL HERE); ??
     die;
