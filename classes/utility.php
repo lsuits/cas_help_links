@@ -6,11 +6,54 @@ class local_cas_help_links_utility {
      * Returns an array of this primary instructor user's course settings data
      * 
      * @param  int  $user_id
-     * @param  boolean $includeLinkData  whether or not to include 'cas_help_link' data in the results
-     * @param  boolean $asJson  whether or not to return the results as JSON
      * @return array|string
      */
-    public static function get_primary_instructor_course_settings($user_id, $includeLinkData = false, $asJson = false)
+    public static function get_primary_instructor_course_settings($user_id)
+    {
+        $courseData = self::get_primary_instructor_course_data($user_id);
+
+        $transformedCourseData = self::transform_course_data($courseData, $user_id);
+
+        return $transformedCourseData;
+    }
+    
+    /**
+     * Returns an array of this primary instructor user's category settings data
+     * 
+     * @param  int  $user_id
+     * @return array|string
+     */
+    public static function get_primary_instructor_category_settings($user_id)
+    {
+        $categoryData = self::get_primary_instructor_category_data($user_id);
+
+        $transformedCategoryData = self::transform_category_data($categoryData, $user_id);
+
+        return $transformedCategoryData;
+    }
+
+   /**
+     * Returns an array of this primary instructor user's personal settings data
+     * 
+     * @param  int  $user_id
+     * @return array|string
+     */
+    public static function get_primary_instructor_user_settings($user_id)
+    {
+        $userLink = self::get_user_link_data($user_id);
+
+        $transformedUserData = self::transform_user_data($userLink, $user_id);
+
+        return $transformedUserData;
+    }
+
+    /**
+     * Fetches the given primary's current course data
+     * 
+     * @param  int $user_id
+     * @return array
+     */
+    private static function get_primary_instructor_course_data($user_id)
     {
         global $DB;
 
@@ -24,65 +67,108 @@ class local_cas_help_links_utility {
             AND t.status = "enrolled"
             AND u.id = ?', array($user_id));
 
-        if ( ! $includeLinkData)
-            return $asJson ? json_encode($result) : $result;
-
-        $transformedResult = self::transform_course_data($result);
-
-        return $asJson ? json_encode($transformedResult) : $transformedResult;
+        return $result;
     }
 
-   /**
-     * Returns an array of this user's personal settings data
+    /**
+     * Fetches the given primary's current category data
      * 
-     * @param  int  $user_id
-     * @param  boolean $asJson  whether or not to return the results as JSON
-     * @return array|string
+     * @param  int $user_id
+     * @return array
      */
-    public static function get_user_settings($user_id, $asJson = false)
+    private static function get_primary_instructor_category_data($user_id)
     {
         global $DB;
 
-        $result = $DB->get_records('local_cas_help_links', [
-            'type' => 'user',
-            'user_id' => $user_id,
-        ]);
+        $result = $DB->get_records_sql('SELECT DISTINCT u.id, cc.id, cc.name FROM mdl_enrol_ues_teachers t
+            INNER JOIN mdl_user u ON u.id = t.userid
+            INNER JOIN mdl_enrol_ues_sections sec ON sec.id = t.sectionid
+            INNER JOIN mdl_course c ON c.idnumber = sec.idnumber
+            INNER JOIN mdl_course_categories cc ON cc.id = c.category
+            WHERE sec.idnumber IS NOT NULL
+            AND sec.idnumber <> ""
+            AND t.primary_flag = "1"
+            AND t.status = "enrolled"
+            AND u.id = ?', array($user_id));
+
+        return $result;
+    }
+
+    /**
+     * Fetches a cas_help_link object as an array for the given user
+     * 
+     * @param  int $user_id
+     * @return array
+     */
+    private static function get_user_link_data($user_id)
+    {
+        $result = self::get_links('user', $user_id);
 
         $result = count($result) ? current($result) : [];
 
-        $transformedResult = self::transform_user_data($result, $user_id);
-
-        return $asJson ? json_encode($transformedResult) : $transformedResult;
+        return $result;
     }
 
     /**
      * Returns an array of the given course data array but including 'cas_help_link' information
      * 
-     * @param  array $courses
+     * @param  array $courseData
      * @return array
      */
-    private static function transform_course_data($courses)
+    private static function transform_course_data($courseData, $user_id)
     {
-        global $USER;
-
         $output = [];
 
-        foreach ($courses as $courseArray) {
+        $userCourseLinks = self::get_user_course_link_data($user_id);
+
+        foreach ($courseData as $courseArray) {
             $course = get_course($courseArray->id);
 
-            $helpUrlArray = \local_cas_help_links_url_generator::getUrlArrayForCourse($course, false);    
+            $linkExistsForCourse = array_key_exists($courseArray->id, $userCourseLinks);
 
-            $output[$courseArray->id] = [
-                'user_id' => $USER->id,
-                'course_id' => $courseArray->id,
-                'course_fullname' => $courseArray->fullname,
-                'course_shortname' => $courseArray->shortname,
-                'course_idnumber' => $courseArray->idnumber,
-                'link_id' => $helpUrlArray['link_id'],
-                'link_display' => $helpUrlArray['display'],
-                'link_checked' => $helpUrlArray['display'] ? 'checked' : '',
-                'link_url' => $helpUrlArray['url'],
-                'link_edit_url' => 'http://www.google.com',
+            $output[$course->id] = [
+                'user_id' => $user_id,
+                'course_id' => $course->id,
+                'course_fullname' => $course->fullname,
+                'course_shortname' => $course->shortname,
+                'course_idnumber' => $course->idnumber,
+                'link_id' => $linkExistsForCourse ? $userCourseLinks[$course->id]->id : '',
+                'link_display' => $linkExistsForCourse ? $userCourseLinks[$course->id]->display : '',
+                'link_checked' => $linkExistsForCourse ? $userCourseLinks[$course->id]->display ? 'checked' : '' : '',
+                'link_url' => $linkExistsForCourse ? $userCourseLinks[$course->id]->link : '',
+                'link_edit_url' => 'http://www.google.com', // @TODO - make this happen
+            ];
+        }
+
+        return $output;
+    }
+
+    /**
+     * Returns an array of the given category data array but including 'cas_help_link' information
+     * 
+     * @param  array $categoryData
+     * @return array
+     */
+    private static function transform_category_data($categoryData, $user_id)
+    {
+        $output = [];
+
+        $userCategoryLinks = self::get_user_category_link_data($user_id);
+
+        foreach ($categoryData as $categoryArray) {
+            $category = self::get_category($categoryArray->id);
+
+            $linkExistsForCategory = array_key_exists($categoryArray->id, $userCategoryLinks);
+
+            $output[$category->id] = [
+                'user_id' => $user_id,
+                'category_id' => $category->id,
+                'category_name' => $category->name,
+                'link_id' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->id : '',
+                'link_display' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->display : '',
+                'link_checked' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->display ? 'checked' : '' : '',
+                'link_url' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->link : '',
+                'link_edit_url' => 'http://www.google.com',  // @TODO - make this happen
             ];
         }
 
@@ -106,6 +192,89 @@ class local_cas_help_links_utility {
             'link_checked' => $isChecked ? 'checked' : '',
             'link_url' => is_object($link) ? $link->link : '',
         ];
+    }
+
+    /**
+     * Returns an array of this user's course link preferences, if any, keyed by the course_id
+     * 
+     * @param  int $user_id
+     * @return array
+     */
+    private static function get_user_course_link_data($user_id)
+    {
+        // pull raw cas_help_links records
+        $userCourseLinks = self::get_user_course_links($user_id);
+
+        $output = [];
+
+        // re-key array with course_id instead of link record id
+        foreach ($userCourseLinks as $linkId => $linkData) {
+            $output[$linkData->course_id] = $linkData;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Returns an array of this user's category link preferences, if any, keyed by the category_id
+     * 
+     * @param  int $user_id
+     * @return array
+     */
+    private static function get_user_category_link_data($user_id)
+    {
+        // pull raw cas_help_links records
+        $userCategoryLinks = self::get_user_category_links($user_id);
+
+        $output = [];
+
+        // re-key array with category_id instead of link record id
+        foreach ($userCategoryLinks as $linkId => $linkData) {
+            $output[$linkData->category_id] = $linkData;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Fetches an array of cas_help_link objects for the given user's courses
+     * 
+     * @param  int $user_id
+     * @return array
+     */
+    private static function get_user_course_links($user_id)
+    {
+        return self::get_links('course', $user_id);
+    }
+
+    /**
+     * Fetches an array of cas_help_link objects for the given user's categories
+     * 
+     * @param  int $user_id
+     * @return array
+     */
+    private static function get_user_category_links($user_id)
+    {
+        return self::get_links('category', $user_id);
+    }
+
+    /**
+     * Fetches an array of cas_help_link objects of a given type for the given user
+     * 
+     * @param  string $type
+     * @param  int $user_id
+     * @return object
+     */
+    private static function get_links($type, $user_id)
+    {
+        global $DB;
+
+        $result = $DB->get_records('local_cas_help_links', [
+            'type' => $type,
+            'user_id' => $user_id,
+        ]);
+
+        return $result;
     }
 
     /**
@@ -308,6 +477,21 @@ class local_cas_help_links_utility {
         $whereClause = substr($whereClause, 0, -4);
 
         return $whereClause;
+    }
+
+    /**
+     * Returns a moodle course_category object for the given id
+     * 
+     * @param  int $category_id
+     * @return object
+     */
+    private static function get_category($category_id)
+    {
+        global $DB;
+
+        $result = $DB->get_record('course_categories', ['id' => $category_id]);
+
+        return $result;
     }
 
 }

@@ -52,9 +52,11 @@ if ($USER->id != $user_id) {
 //////////////////////////////////////////////////////////
 
 // get all data
-$courseSettingsData = \local_cas_help_links_utility::get_primary_instructor_course_settings($user_id, true);
+$courseSettingsData = \local_cas_help_links_utility::get_primary_instructor_course_settings($user_id);
 
-$userSettingsData = \local_cas_help_links_utility::get_user_settings($user_id);
+$categorySettingsData = \local_cas_help_links_utility::get_primary_instructor_category_settings($user_id);
+
+$userSettingsData = \local_cas_help_links_utility::get_primary_instructor_user_settings($user_id);
 
 // PAGE RENDERING STUFF
 $PAGE->set_context($context);
@@ -96,6 +98,34 @@ echo $OUTPUT->header();
                     echo '<td><p class="current-user-course-url"><span class="url">' . $course['link_url'] . '</span></p></td>';
                 } else {
                     echo '<td><p class="current-user-course-url default-url"><span class="url">' . $course['link_url'] . '</span>&nbsp;&nbsp;(Default)</p></td>';
+                }
+                echo '</tr>';
+            } ?>
+        </table>
+    </div>
+
+    <h3>Category Links and Settings</h3>
+
+    <div class="category-list-container col-xs-12">
+        <table>
+            <?php foreach ($categorySettingsData as $category) {
+                echo '<tr>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    <input class="display-toggle" ' . $category['link_checked'] . ' type="checkbox" data-toggle="toggle" data-style="ios">&nbsp;&nbsp;&nbsp;&nbsp;' . $category['category_name'] . '
+                                </label>
+                            </div>
+                        </td>
+
+                        <td>
+                            <p class="btn-edit-user-category">Edit</p>
+                        </td>';
+
+                if ($category['link_id']) {
+                    echo '<td><p class="current-user-category-url"><span class="url">' . $category['link_url'] . '</span></p></td>';
+                } else {
+                    echo '<td><p class="current-user-category-url default-url"><span class="url">' . $category['link_url'] . '</span>&nbsp;&nbsp;(Default)</p></td>';
                 }
                 echo '</tr>';
             } ?>
