@@ -518,7 +518,7 @@ class local_cas_help_links_utility {
      */
     public static function encode_input_name($field, $type, $link_id, $entity_id)
     {
-        return 'link-' . $link_id . '-' . $type . '-' . $entity_id . '-' . $field;
+        return 'link_' . $link_id . '_' . $type . '_' . $entity_id . '_' . $field;
     }
 
 }

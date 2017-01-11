@@ -52,7 +52,7 @@ if ($USER->id != $user_id) {
 /// 
 //////////////////////////////////////////////////////////
 if ($data = data_submitted()) {
-    var_dump($data->id);die;
+    var_dump($data);die;
 }
 
 //////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ echo $OUTPUT->header();
 
 <div id="component-user-settings">
     
-    <form target="/" method="POST">
+    <form method="POST">
 
         <input type="hidden" name="id" value="<?php echo $user_id; ?>" />
 
@@ -104,7 +104,9 @@ echo $OUTPUT->header();
                                         <input class="display-toggle" ' . $course['link_checked'] . ' type="checkbox" data-toggle="toggle" data-style="ios">&nbsp;&nbsp;&nbsp;&nbsp;' . $course['course_shortname'] . '
                                     </label>
                                 </div>
-                            </td><td>';
+                            </td>
+
+                            <td><input type="text" name="' . $course['link_input_name'] . '">';
 
                     // if a user-course link exists
                     if ($course['link_id']) {
