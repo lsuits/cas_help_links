@@ -96,8 +96,12 @@ echo $OUTPUT->header();
 
                 if ($course['link_id']) {
                     echo '<td><p class="current-user-course-url"><span class="url">' . $course['link_url'] . '</span></p></td>';
+                } else if ($categorySettingsData[$course['course_category_id']]['link_id']) {
+                    echo '<td><p class="current-user-course-url default-url">(Using Category Default: ' . $categorySettingsData[$course['course_category_id']]['link_url'] . ')</p></td>';
+                } else if ($userSettingsData['link_id']) {
+                    echo '<td><p class="current-user-course-url default-url">(Using Personal Default: ' . $userSettingsData['link_url'] . ')</p></td>';
                 } else {
-                    echo '<td><p class="current-user-course-url default-url"><span class="url">' . $course['link_url'] . '</span>&nbsp;&nbsp;(Default)</p></td>';
+                    echo '<td><p class="current-user-course-url default-url">(Using System Default)</p></td>';
                 }
                 echo '</tr>';
             } ?>
@@ -124,8 +128,10 @@ echo $OUTPUT->header();
 
                 if ($category['link_id']) {
                     echo '<td><p class="current-user-category-url"><span class="url">' . $category['link_url'] . '</span></p></td>';
+                } else if ($userSettingsData['link_id']) {
+                    echo '<td><p class="current-user-category-url default-url">(Using Personal Default: ' . $userSettingsData['link_url'] . ')</p></td>';
                 } else {
-                    echo '<td><p class="current-user-category-url default-url"><span class="url">' . $category['link_url'] . '</span>&nbsp;&nbsp;(Default)</p></td>';
+                    echo '<td><p class="current-user-category-url default-url">(Using System Default)</p></td>';
                 }
                 echo '</tr>';
             } ?>

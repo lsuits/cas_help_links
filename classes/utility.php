@@ -57,7 +57,7 @@ class local_cas_help_links_utility {
     {
         global $DB;
 
-        $result = $DB->get_records_sql('SELECT DISTINCT u.id, c.id, c.fullname, c.shortname, c.idnumber FROM mdl_enrol_ues_teachers t
+        $result = $DB->get_records_sql('SELECT DISTINCT u.id, c.id, c.fullname, c.shortname, c.idnumber, c.category FROM mdl_enrol_ues_teachers t
             INNER JOIN mdl_user u ON u.id = t.userid
             INNER JOIN mdl_enrol_ues_sections sec ON sec.id = t.sectionid
             INNER JOIN mdl_course c ON c.idnumber = sec.idnumber
@@ -134,6 +134,7 @@ class local_cas_help_links_utility {
                 'course_fullname' => $course->fullname,
                 'course_shortname' => $course->shortname,
                 'course_idnumber' => $course->idnumber,
+                'course_category_id' => $course->category,
                 'link_id' => $linkExistsForCourse ? $userCourseLinks[$course->id]->id : '0',
                 'link_display' => $linkExistsForCourse ? $userCourseLinks[$course->id]->display : '0',
                 'link_checked' => $isChecked ? 'checked' : '',
