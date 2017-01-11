@@ -45,8 +45,20 @@ if ($USER->id != $user_id) {
     die;
 }
 
+
 //////////////////////////////////////////////////////////
 /// 
+/// HANDLE FORM SUBMISSION
+/// 
+//////////////////////////////////////////////////////////
+if ($data = data_submitted()) {
+    var_dump($data->id);die;
+}
+
+//////////////////////////////////////////////////////////
+/// 
+/// RENDER PAGE
+///
 /// (NOTE: it is assumed this is a primary instructor or site admin)
 /// 
 //////////////////////////////////////////////////////////
@@ -76,98 +88,105 @@ echo $OUTPUT->header();
 
 <div id="component-user-settings">
     
-    <h3>Course Links and Settings</h3>
+    <form target="/" method="POST">
 
-    <div class="course-list-container col-xs-12">
-        <table>
-            <?php foreach ($courseSettingsData as $course) {
-                echo '<tr>
-                        <td>
-                            <div class="checkbox">
-                                <label>
-                                    <input class="display-toggle" ' . $course['link_checked'] . ' type="checkbox" data-toggle="toggle" data-style="ios">&nbsp;&nbsp;&nbsp;&nbsp;' . $course['course_shortname'] . '
-                                </label>
-                            </div>
-                        </td>
+        <input type="hidden" name="id" value="<?php echo $user_id; ?>" />
 
-                        <td>
-                            <p class="btn-edit-user-course">Edit</p>
-                        </td>';
+        <h3>Course Links and Settings</h3>
 
-                if ($course['link_id']) {
-                    echo '<td><p class="current-user-course-url"><span class="url">' . $course['link_url'] . '</span></p></td>';
-                } else if ($categorySettingsData[$course['course_category_id']]['link_id']) {
-                    echo '<td><p class="current-user-course-url default-url">(Using Category Default: ' . $categorySettingsData[$course['course_category_id']]['link_url'] . ')</p></td>';
-                } else if ($userSettingsData['link_id']) {
-                    echo '<td><p class="current-user-course-url default-url">(Using Personal Default: ' . $userSettingsData['link_url'] . ')</p></td>';
-                } else {
-                    echo '<td><p class="current-user-course-url default-url">(Using System Default)</p></td>';
-                }
-                echo '</tr>';
-            } ?>
-        </table>
-    </div>
+        <div class="course-list-container col-xs-12">
+            <table>
+                <?php foreach ($courseSettingsData as $course) {
+                    echo '<tr>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        <input class="display-toggle" ' . $course['link_checked'] . ' type="checkbox" data-toggle="toggle" data-style="ios">&nbsp;&nbsp;&nbsp;&nbsp;' . $course['course_shortname'] . '
+                                    </label>
+                                </div>
+                            </td><td>';
 
-    <h3>Category Links and Settings</h3>
+                    // if a user-course link exists
+                    if ($course['link_id']) {
+                        echo '<p class="current-user-course-url"><span class="url">' . $course['link_url'] . '</span></p>';
 
-    <div class="category-list-container col-xs-12">
-        <table>
-            <?php foreach ($categorySettingsData as $category) {
-                echo '<tr>
-                        <td>
-                            <div class="checkbox">
-                                <label>
-                                    <input class="display-toggle" ' . $category['link_checked'] . ' type="checkbox" data-toggle="toggle" data-style="ios">&nbsp;&nbsp;&nbsp;&nbsp;' . $category['category_name'] . '
-                                </label>
-                            </div>
-                        </td>
+                    // otherwise, if a user-category link exists
+                    } else if ($categorySettingsData[$course['course_category_id']]['link_id']) {
+                        echo '<p class="current-user-course-url default-url">(Using Category Default: ' . $categorySettingsData[$course['course_category_id']]['link_url'] . ')</p>';
 
-                        <td>
-                            <p class="btn-edit-user-category">Edit</p>
-                        </td>';
+                    // otherwise, if a user link exists
+                    } else if ($userSettingsData['link_id']) {
+                        echo '<p class="current-user-course-url default-url">(Using Personal Default: ' . $userSettingsData['link_url'] . ')</p>';
 
-                if ($category['link_id']) {
-                    echo '<td><p class="current-user-category-url"><span class="url">' . $category['link_url'] . '</span></p></td>';
-                } else if ($userSettingsData['link_id']) {
-                    echo '<td><p class="current-user-category-url default-url">(Using Personal Default: ' . $userSettingsData['link_url'] . ')</p></td>';
-                } else {
-                    echo '<td><p class="current-user-category-url default-url">(Using System Default)</p></td>';
-                }
-                echo '</tr>';
-            } ?>
-        </table>
-    </div>
+                    // otherwise, if a system default exists
+                    } else {
+                        echo '<p class="current-user-course-url default-url">(Using System Default)</p>';
+                    }
 
-    <h3>User Link and Setting</h3>
+                    echo '</td></tr>';
+                } ?>
+            </table>
+        </div>
 
-    <div class="user-container col-xs-12">
-        <table>
-            <tr>
-                <td>
-                    <p>My Default Help Link</p>
-                </td>
-                
-                <td>
-                    <p><?php echo $userSettingsData['link_url']; ?></p>
-                </td>
-            </tr>
+        <h3>Category Links and Settings</h3>
 
-            <tr>
-                <td>
-                    <p>Show Help Links For My Courses</p>
-                </td>
-                
-                <td>
-                    <div class="checkbox">
-                        <label>
-                            <input class="display-toggle" <?php echo $userSettingsData['link_checked']; ?> type="checkbox" data-toggle="toggle" data-style="ios">
-                        </label>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
+        <div class="category-list-container col-xs-12">
+            <table>
+                <?php foreach ($categorySettingsData as $category) {
+                    echo '<tr>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        <input class="display-toggle" ' . $category['link_checked'] . ' type="checkbox" data-toggle="toggle" data-style="ios">&nbsp;&nbsp;&nbsp;&nbsp;' . $category['category_name'] . '
+                                    </label>
+                                </div>
+                            </td>';
 
+                    if ($category['link_id']) {
+                        echo '<td><p class="current-user-category-url"><span class="url">' . $category['link_url'] . '</span></p></td>';
+                    } else if ($userSettingsData['link_id']) {
+                        echo '<td><p class="current-user-category-url default-url">(Using Personal Default: ' . $userSettingsData['link_url'] . ')</p></td>';
+                    } else {
+                        echo '<td><p class="current-user-category-url default-url">(Using System Default)</p></td>';
+                    }
+
+                    echo '</tr>';
+                } ?>
+            </table>
+        </div>
+
+        <h3>User Link and Setting</h3>
+
+        <div class="user-container col-xs-12">
+            <table>
+                <tr>
+                    <td>
+                        <p>My Default Help Link</p>
+                    </td>
+                    
+                    <td>
+                        <p><?php echo $userSettingsData['link_url']; ?></p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <p>Show Help Links For My Courses</p>
+                    </td>
+                    
+                    <td>
+                        <div class="checkbox">
+                            <label>
+                                <input class="display-toggle" <?php echo $userSettingsData['link_checked']; ?> type="checkbox" data-toggle="toggle" data-style="ios">
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <button type="submit">Save Changes</button>
+    </form>
 </div>
 
 <?php

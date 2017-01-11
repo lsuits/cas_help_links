@@ -128,6 +128,8 @@ class local_cas_help_links_utility {
 
             $isChecked = $linkExistsForCourse ? $userCourseLinks[$course->id]->display : true;
 
+            $linkId = $linkExistsForCourse ? $userCourseLinks[$course->id]->id : '0';
+
             $output[$course->id] = [
                 'user_id' => $user_id,
                 'course_id' => $course->id,
@@ -135,10 +137,12 @@ class local_cas_help_links_utility {
                 'course_shortname' => $course->shortname,
                 'course_idnumber' => $course->idnumber,
                 'course_category_id' => $course->category,
-                'link_id' => $linkExistsForCourse ? $userCourseLinks[$course->id]->id : '0',
+                'link_id' => $linkId,
                 'link_display' => $linkExistsForCourse ? $userCourseLinks[$course->id]->display : '0',
                 'link_checked' => $isChecked ? 'checked' : '',
                 'link_url' => $linkExistsForCourse ? $userCourseLinks[$course->id]->link : '',
+                'display_input_name' => self::encode_input_name('display', 'course', $linkId, $course->id),
+                'link_input_name' => self::encode_input_name('link', 'course', $linkId, $course->id)
             ];
         }
 
@@ -164,14 +168,18 @@ class local_cas_help_links_utility {
 
             $isChecked = $linkExistsForCategory ? $userCategoryLinks[$category->id]->display : true;
 
+            $linkId = $linkExistsForCategory ? $userCategoryLinks[$category->id]->id : '0';
+
             $output[$category->id] = [
                 'user_id' => $user_id,
                 'category_id' => $category->id,
                 'category_name' => $category->name,
-                'link_id' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->id : '',
-                'link_display' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->display : '',
+                'link_id' => $linkId,
+                'link_display' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->display : '0',
                 'link_checked' => $isChecked ? 'checked' : '',
                 'link_url' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->link : '',
+                'display_input_name' => self::encode_input_name('display', 'category', $linkId, $category->id),
+                'link_input_name' => self::encode_input_name('link', 'category', $linkId, $category->id)
             ];
         }
 
@@ -194,6 +202,8 @@ class local_cas_help_links_utility {
             'link_display' => is_object($link) ? $link->display : '',
             'link_checked' => $isChecked ? 'checked' : '',
             'link_url' => is_object($link) ? $link->link : '',
+            'display_input_name' => self::encode_input_name('display', 'user', $link->id, $user_id),
+            'link_input_name' => self::encode_input_name('link', 'user', $link->id, $user_id)
         ];
     }
 
@@ -495,6 +505,20 @@ class local_cas_help_links_utility {
         $result = $DB->get_record('course_categories', ['id' => $category_id]);
 
         return $result;
+    }
+
+    /**
+     * Returns an encoded input name string for the given attributes
+     * 
+     * @param  string $field  input field: display|link
+     * @param  string $type  entity type: course|category|user
+     * @param  int $link_id  cas_help_link record id (0 as default)
+     * @param  int $entity_id  id of given entity type record
+     * @return string
+     */
+    public static function encode_input_name($field, $type, $link_id, $entity_id)
+    {
+        return 'link-' . $link_id . '-' . $type . '-' . $entity_id . '-' . $field;
     }
 
 }
