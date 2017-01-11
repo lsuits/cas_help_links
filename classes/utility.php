@@ -3,14 +3,14 @@
 class local_cas_help_links_utility {
 
     /**
-     * Returns an array of this primary instructor user's course data
+     * Returns an array of this primary instructor user's course settings data
      * 
      * @param  int  $user_id
      * @param  boolean $includeLinkData  whether or not to include 'cas_help_link' data in the results
      * @param  boolean $asJson  whether or not to return the results as JSON
      * @return array|string
      */
-    public static function get_primary_instructor_courses($user_id, $includeLinkData = false, $asJson = false)
+    public static function get_primary_instructor_course_settings($user_id, $includeLinkData = false, $asJson = false)
     {
         global $DB;
 
@@ -28,6 +28,29 @@ class local_cas_help_links_utility {
             return $asJson ? json_encode($result) : $result;
 
         $transformedResult = self::transform_course_data($result);
+
+        return $asJson ? json_encode($transformedResult) : $transformedResult;
+    }
+
+   /**
+     * Returns an array of this user's personal settings data
+     * 
+     * @param  int  $user_id
+     * @param  boolean $asJson  whether or not to return the results as JSON
+     * @return array|string
+     */
+    public static function get_user_settings($user_id, $asJson = false)
+    {
+        global $DB;
+
+        $result = $DB->get_records('local_cas_help_links', [
+            'type' => 'user',
+            'user_id' => $user_id,
+        ]);
+
+        $result = count($result) ? current($result) : [];
+
+        $transformedResult = self::transform_user_data($result, $user_id);
 
         return $asJson ? json_encode($transformedResult) : $transformedResult;
     }
@@ -64,6 +87,25 @@ class local_cas_help_links_utility {
         }
 
         return $output;
+    }
+
+    /**
+     * Returns an array of the given user data but including 'cas_help_link' information
+     * 
+     * @param  mixed $link
+     * @return array
+     */
+    private static function transform_user_data($link, $user_id)
+    {
+        $isChecked = is_object($link) ? $link->display : true;
+
+        return [
+            'user_id' => $user_id,
+            'link_id' => is_object($link) ? $link->id : '',
+            'link_display' => is_object($link) ? $link->display : '',
+            'link_checked' => $isChecked ? 'checked' : '',
+            'link_url' => is_object($link) ? $link->link : '',
+        ];
     }
 
     /**

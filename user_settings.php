@@ -52,10 +52,11 @@ if ($USER->id != $user_id) {
 //////////////////////////////////////////////////////////
 
 // get all data
-$courseData = \local_cas_help_links_utility::get_primary_instructor_courses($user_id, true);
+$courseSettingsData = \local_cas_help_links_utility::get_primary_instructor_course_settings($user_id, true);
+
+$userSettingsData = \local_cas_help_links_utility::get_user_settings($user_id);
 
 // PAGE RENDERING STUFF
-$PAGE->set_context($context);
 $PAGE->set_context($context);
 $PAGE->requires->jquery();
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . "/local/cas_help_links/style.css"));
@@ -77,7 +78,7 @@ echo $OUTPUT->header();
 
     <div class="course-list-container col-xs-12">
         <table>
-            <?php foreach ($courseData as $course) {
+            <?php foreach ($courseSettingsData as $course) {
                 echo '<tr>
                         <td>
                             <div class="checkbox">
@@ -106,16 +107,24 @@ echo $OUTPUT->header();
     <div class="user-container col-xs-12">
         <table>
             <tr>
-                <td><p>Help Link</p></td>
-                <td><p>http://www.myawesomesauce.com</p></td>
+                <td>
+                    <p>My Default Help Link</p>
+                </td>
+                
+                <td>
+                    <p><?php echo $userSettingsData['link_url']; ?></p>
+                </td>
             </tr>
 
             <tr>
-                <td><p>Hide All My Links</p></td>
+                <td>
+                    <p>Show Help Links For My Courses</p>
+                </td>
+                
                 <td>
                     <div class="checkbox">
                         <label>
-                            <input class="display-toggle" type="checkbox" data-toggle="toggle" data-style="ios">
+                            <input class="display-toggle" <?php echo $userSettingsData['link_checked']; ?> type="checkbox" data-toggle="toggle" data-style="ios">
                         </label>
                     </div>
                 </td>
