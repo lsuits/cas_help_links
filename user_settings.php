@@ -32,14 +32,14 @@ $context = context_system::instance();
 
 global $PAGE, $USER, $CFG;
 
-$PAGE->set_url('/local/cas_help_links/user_settings.php', ['user_id' => $user_id]);
+$PAGE->set_url($CFG->wwwroot . '/local/cas_help_links/user_settings.php', ['user_id' => $user_id]);
 $PAGE->set_context($context);
 
 require_login();
 require_capability('local/cas_help_links:editglobalsettings', $context);
 
 // make sure that the user being referenced is the auth user
-if ($USER->id != $user_id) {
+if ($USER->id != $user_id && !has_capability('moodle/course:create', $context)) {
     echo 'sorry, no';
     // redirect (SOME URL HERE); ??
     die;
@@ -47,7 +47,7 @@ if ($USER->id != $user_id) {
 
 //////////////////////////////////////////////////////////
 /// 
-/// (NOTE: it is assumed this is a primary instructor)
+/// (NOTE: it is assumed this is a primary instructor or site admin)
 /// 
 //////////////////////////////////////////////////////////
 

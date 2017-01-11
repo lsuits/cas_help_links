@@ -41,9 +41,10 @@ class local_cas_help_links_url_generator {
      */
     private static function getCourseEditHelpUrlArray($course)
     {
+    global $CFG;
         $urlArray = [
             'display' => true,
-            'url' => '/local/cas_help_links/user_settings.php?id=' . self::getAuthUserId(), // @TODO - make this happen
+            'url' => $CFG->wwwroot . '/local/cas_help_links/user_settings.php?id=' . self::getAuthUserId(), // @TODO - make this happen
             'label' => get_string('settings_button_label', 'local_cas_help_links'),
         ];
 
