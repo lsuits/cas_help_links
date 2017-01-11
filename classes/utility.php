@@ -126,17 +126,18 @@ class local_cas_help_links_utility {
 
             $linkExistsForCourse = array_key_exists($courseArray->id, $userCourseLinks);
 
+            $isChecked = $linkExistsForCourse ? $userCourseLinks[$course->id]->display : true;
+
             $output[$course->id] = [
                 'user_id' => $user_id,
                 'course_id' => $course->id,
                 'course_fullname' => $course->fullname,
                 'course_shortname' => $course->shortname,
                 'course_idnumber' => $course->idnumber,
-                'link_id' => $linkExistsForCourse ? $userCourseLinks[$course->id]->id : '',
-                'link_display' => $linkExistsForCourse ? $userCourseLinks[$course->id]->display : '',
-                'link_checked' => $linkExistsForCourse ? $userCourseLinks[$course->id]->display ? 'checked' : '' : '',
+                'link_id' => $linkExistsForCourse ? $userCourseLinks[$course->id]->id : '0',
+                'link_display' => $linkExistsForCourse ? $userCourseLinks[$course->id]->display : '0',
+                'link_checked' => $isChecked ? 'checked' : '',
                 'link_url' => $linkExistsForCourse ? $userCourseLinks[$course->id]->link : '',
-                'link_edit_url' => 'http://www.google.com', // @TODO - make this happen
             ];
         }
 
@@ -160,15 +161,16 @@ class local_cas_help_links_utility {
 
             $linkExistsForCategory = array_key_exists($categoryArray->id, $userCategoryLinks);
 
+            $isChecked = $linkExistsForCategory ? $userCategoryLinks[$category->id]->display : true;
+
             $output[$category->id] = [
                 'user_id' => $user_id,
                 'category_id' => $category->id,
                 'category_name' => $category->name,
                 'link_id' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->id : '',
                 'link_display' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->display : '',
-                'link_checked' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->display ? 'checked' : '' : '',
+                'link_checked' => $isChecked ? 'checked' : '',
                 'link_url' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->link : '',
-                'link_edit_url' => 'http://www.google.com',  // @TODO - make this happen
             ];
         }
 
