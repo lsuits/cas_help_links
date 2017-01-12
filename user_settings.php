@@ -23,8 +23,6 @@
 // defined('MOODLE_INTERNAL') || die();
 
 require_once('../../config.php');
-// require_once($CFG->libdir.'/adminlib.php');
-require_once('lib.php');
 
 $user_id = required_param('id', PARAM_INT);
 
@@ -36,7 +34,6 @@ $PAGE->set_url($CFG->wwwroot . '/local/cas_help_links/user_settings.php', ['user
 $PAGE->set_context($context);
 
 require_login();
-require_capability('local/cas_help_links:editglobalsettings', $context);
 
 // make sure that the user being referenced is the auth user
 if ($USER->id != $user_id) {
@@ -44,7 +41,6 @@ if ($USER->id != $user_id) {
     // redirect (SOME URL HERE); ??
     die;
 }
-
 
 //////////////////////////////////////////////////////////
 /// 
