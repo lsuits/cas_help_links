@@ -101,31 +101,34 @@ echo $OUTPUT->header();
                             <td>
                                 <div class="checkbox">
                                     <label>
-                                        <input class="display-toggle" ' . $course['link_checked'] . ' type="checkbox" data-toggle="toggle" data-style="ios">&nbsp;&nbsp;&nbsp;&nbsp;' . $course['course_shortname'] . '
+                                        <input class="display-toggle" ' . $course['link_checked'] . ' type="checkbox" name="' . $course['display_input_name'] . '" data-toggle="toggle" data-style="ios">&nbsp;&nbsp;&nbsp;&nbsp;' . $course['course_shortname'] . '
                                     </label>
                                 </div>
                             </td>
 
-                            <td><input type="text" name="' . $course['link_input_name'] . '">';
+                            <td>
+                                <input type="text" name="' . $course['link_input_name'] . '"';
 
-                    // if a user-course link exists
-                    if ($course['link_id']) {
-                        echo '<p class="current-user-course-url"><span class="url">' . $course['link_url'] . '</span></p>';
+                                // if a user-course link exists, add value to input
+                                if ($course['link_id']) {
+                                    echo ' value="' . $course['link_url'] . '"';
+                                }
 
-                    // otherwise, if a user-category link exists
-                    } else if ($categorySettingsData[$course['course_category_id']]['link_id']) {
-                        echo '<p class="current-user-course-url default-url">(Using Category Default: ' . $categorySettingsData[$course['course_category_id']]['link_url'] . ')</p>';
+                                echo '></td><td>';
 
-                    // otherwise, if a user link exists
-                    } else if ($userSettingsData['link_id']) {
-                        echo '<p class="current-user-course-url default-url">(Using Personal Default: ' . $userSettingsData['link_url'] . ')</p>';
+                                if ( ! $course['link_id'] && $categorySettingsData[$course['course_category_id']]['link_id']) {
+                                    echo '<p class="current-user-course-url default-url">(Using Category Default: ' . $categorySettingsData[$course['course_category_id']]['link_url'] . ')</p>';
 
-                    // otherwise, if a system default exists
-                    } else {
-                        echo '<p class="current-user-course-url default-url">(Using System Default)</p>';
-                    }
+                                // otherwise, if a user link exists
+                                } else if ( ! $course['link_id'] && $userSettingsData['link_id']) {
+                                    echo '<p class="current-user-course-url default-url">(Using Personal Default: ' . $userSettingsData['link_url'] . ')</p>';
 
-                    echo '</td></tr>';
+                                // otherwise, if a system default exists
+                                } else if ( ! $course['link_id']) {
+                                    echo '<p class="current-user-course-url default-url">(Using System Default)</p>';
+                                }
+
+                                echo '</td></tr>';
                 } ?>
             </table>
         </div>
@@ -139,20 +142,28 @@ echo $OUTPUT->header();
                             <td>
                                 <div class="checkbox">
                                     <label>
-                                        <input class="display-toggle" ' . $category['link_checked'] . ' type="checkbox" data-toggle="toggle" data-style="ios">&nbsp;&nbsp;&nbsp;&nbsp;' . $category['category_name'] . '
+                                        <input class="display-toggle" ' . $category['link_checked'] . ' type="checkbox" name="' . $category['display_input_name'] . '" data-toggle="toggle" data-style="ios">&nbsp;&nbsp;&nbsp;&nbsp;' . $category['category_name'] . '
                                     </label>
                                 </div>
-                            </td>';
+                            </td>
 
-                    if ($category['link_id']) {
-                        echo '<td><p class="current-user-category-url"><span class="url">' . $category['link_url'] . '</span></p></td>';
-                    } else if ($userSettingsData['link_id']) {
-                        echo '<td><p class="current-user-category-url default-url">(Using Personal Default: ' . $userSettingsData['link_url'] . ')</p></td>';
-                    } else {
-                        echo '<td><p class="current-user-category-url default-url">(Using System Default)</p></td>';
-                    }
+                            <td>
+                                <input type="text" name="' . $category['link_input_name'] . '"';
 
-                    echo '</tr>';
+                                // if a user-category link exists, add value to input
+                                if ($category['link_id']) {
+                                    echo ' value="' . $category['link_url'] . '"';
+                                }
+
+                                echo '></td><td>';
+
+                                if ( ! $category['link_id'] && $userSettingsData['link_id']) {
+                                    echo '<p class="current-user-category-url default-url">(Using Personal Default: ' . $userSettingsData['link_url'] . ')</p>';
+                                } else if ( ! $category['link_id']) {
+                                    echo '<p class="current-user-category-url default-url">(Using System Default)</p>';
+                                }
+
+                                echo '</td></tr>';
                 } ?>
             </table>
         </div>
@@ -167,7 +178,16 @@ echo $OUTPUT->header();
                     </td>
                     
                     <td>
-                        <p><?php echo $userSettingsData['link_url']; ?></p>
+                        <input type="text" name="<?php echo $userSettingsData['link_input_name']; ?>"
+
+                        <?php
+                            // if a user link exists, add value to input
+                            if ($userSettingsData['link_id']) {
+                                echo ' value="' . $userSettingsData['link_url'] . '"';
+                            }
+                        ?>
+
+                        >
                     </td>
                 </tr>
 
@@ -179,7 +199,7 @@ echo $OUTPUT->header();
                     <td>
                         <div class="checkbox">
                             <label>
-                                <input class="display-toggle" <?php echo $userSettingsData['link_checked']; ?> type="checkbox" data-toggle="toggle" data-style="ios">
+                                <input class="display-toggle" <?php echo $userSettingsData['link_checked']; ?> type="checkbox" name="<?php echo $userSettingsData['display_input_name']; ?>" data-toggle="toggle" data-style="ios">
                             </label>
                         </div>
                     </td>
