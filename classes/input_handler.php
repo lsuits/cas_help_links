@@ -29,6 +29,31 @@ class local_cas_help_links_input_handler {
     }
 
     /**
+     * Accepts a given array of posted category link setting data and persists appropriately
+     * 
+     * @param  array $post_data
+     * @return void
+     */
+    public static function handle_category_settings_input($post_data)
+    {
+        $link_objects = self::get_link_input_objects($post_data);
+
+        // iterate through all link objects
+        foreach ($link_objects as $link) {
+            // if input is given for an existing link record
+            if ($link->id) {
+                // update the cas_help_link record
+                self::update_link_record($link, true);
+
+            // otherwise, if input is given for a non-exisitent link
+            } else {
+                if (self::link_should_be_persisted($link))
+                    self::insert_link_record($link);
+            }
+        }
+    }
+
+    /**
      * Returns an array of formatted link objects from the given post data
      *
      * Optionally assigns ownership of the link to the given optional user id

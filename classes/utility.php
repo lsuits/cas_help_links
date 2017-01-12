@@ -6,7 +6,7 @@ class local_cas_help_links_utility {
      * Returns an array of this primary instructor user's course settings data
      * 
      * @param  int  $user_id
-     * @return array|string
+     * @return array
      */
     public static function get_primary_instructor_course_settings($user_id)
     {
@@ -21,7 +21,7 @@ class local_cas_help_links_utility {
      * Returns an array of this primary instructor user's category settings data
      * 
      * @param  int  $user_id
-     * @return array|string
+     * @return array
      */
     public static function get_primary_instructor_category_settings($user_id)
     {
@@ -36,7 +36,7 @@ class local_cas_help_links_utility {
      * Returns an array of this primary instructor user's personal settings data
      * 
      * @param  int  $user_id
-     * @return array|string
+     * @return array
      */
     public static function get_primary_instructor_user_settings($user_id)
     {
@@ -45,6 +45,20 @@ class local_cas_help_links_utility {
         $transformedUserData = self::transform_user_data($userLink, $user_id);
 
         return $transformedUserData;
+    }
+
+    /**
+     * Returns an array of all category settings data
+     * 
+     * @return array
+     */
+    public static function get_all_category_settings()
+    {
+        $categoryData = self::get_category_data();
+
+        $transformedCategoryData = self::transform_category_data($categoryData);
+
+        return $transformedCategoryData;
     }
 
     /**
@@ -110,6 +124,20 @@ class local_cas_help_links_utility {
     }
 
     /**
+     * Fetches category data
+     * 
+     * @return array
+     */
+    public static function get_category_data()
+    {
+        global $DB;
+
+        $result = $DB->get_records_sql('SELECT DISTINCT id, name FROM mdl_course_categories');
+
+        return $result;
+    }
+
+    /**
      * Returns an array of the given course data array but including 'cas_help_link' information
      * 
      * @param  array $courseData
@@ -155,29 +183,29 @@ class local_cas_help_links_utility {
      * @param  array $categoryData
      * @return array
      */
-    private static function transform_category_data($categoryData, $user_id)
+    private static function transform_category_data($categoryData, $user_id = 0)
     {
         $output = [];
 
-        $userCategoryLinks = self::get_user_category_link_data($user_id);
+        $categoryLinks = $user_id ? self::get_user_category_link_data($user_id) : self::get_category_link_data();
 
         foreach ($categoryData as $categoryArray) {
             $category = self::get_category($categoryArray->id);
 
-            $linkExistsForCategory = array_key_exists($categoryArray->id, $userCategoryLinks);
+            $linkExistsForCategory = array_key_exists($categoryArray->id, $categoryLinks);
 
-            $isChecked = $linkExistsForCategory ? $userCategoryLinks[$category->id]->display : true;
+            $isChecked = $linkExistsForCategory ? $categoryLinks[$category->id]->display : true;
 
-            $linkId = $linkExistsForCategory ? $userCategoryLinks[$category->id]->id : '0';
+            $linkId = $linkExistsForCategory ? $categoryLinks[$category->id]->id : '0';
 
             $output[$category->id] = [
                 'user_id' => $user_id,
                 'category_id' => $category->id,
                 'category_name' => $category->name,
                 'link_id' => $linkId,
-                'link_display' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->display : '0',
+                'link_display' => $linkExistsForCategory ? $categoryLinks[$category->id]->display : '0',
                 'link_checked' => $isChecked ? 'checked' : '',
-                'link_url' => $linkExistsForCategory ? $userCategoryLinks[$category->id]->link : '',
+                'link_url' => $linkExistsForCategory ? $categoryLinks[$category->id]->link : '',
                 'display_input_name' => \local_cas_help_links_input_handler::encode_input_name('display', 'category', $linkId, $category->id),
                 'link_input_name' => \local_cas_help_links_input_handler::encode_input_name('link', 'category', $linkId, $category->id)
             ];
@@ -252,6 +280,26 @@ class local_cas_help_links_utility {
     }
 
     /**
+     * Returns an array of this category's link preferences, if any, keyed by the category_id
+     * 
+     * @return array
+     */
+    private static function get_category_link_data()
+    {
+        // pull raw cas_help_links records
+        $categoryLinks = self::get_category_links();
+
+        $output = [];
+
+        // re-key array with category_id instead of link record id
+        foreach ($categoryLinks as $linkId => $linkData) {
+            $output[$linkData->category_id] = $linkData;
+        }
+
+        return $output;
+    }
+
+    /**
      * Fetches an array of cas_help_link objects for the given user's courses
      * 
      * @param  int $user_id
@@ -274,20 +322,34 @@ class local_cas_help_links_utility {
     }
 
     /**
-     * Fetches an array of cas_help_link objects of a given type for the given user
+     * Fetches an array of cas_help_link objects for all categories
+     * 
+     * @return array
+     */
+    private static function get_category_links()
+    {
+        return self::get_links('category');
+    }
+
+    /**
+     * Fetches an array of cas_help_link objects of a given type
+     *
+     * Optionally, scopes to the given user id
      * 
      * @param  string $type
      * @param  int $user_id
      * @return object
      */
-    private static function get_links($type, $user_id)
+    private static function get_links($type, $user_id = 0)
     {
         global $DB;
 
-        $result = $DB->get_records('local_cas_help_links', [
-            'type' => $type,
-            'user_id' => $user_id,
-        ]);
+        $params['type'] = $type;
+
+        if ($user_id)
+            $params['user_id'] = $user_id;
+
+        $result = $DB->get_records('local_cas_help_links', $params);
 
         return $result;
     }
