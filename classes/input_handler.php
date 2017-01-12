@@ -18,11 +18,11 @@ class local_cas_help_links_input_handler {
             // if input is given for an existing link record
             if ($link->id) {
                 // update the cas_help_link record
-                self::update_link_record($link);
+                self::update_link_record($link, true);
 
             // otherwise, if input is given for a non-exisitent link
             } else {
-                if (self::link_should_be_inserted_for_user($link, $user_id))
+                if (self::link_should_be_persisted($link))
                     self::insert_link_record($link);
             }
         }
@@ -53,28 +53,33 @@ class local_cas_help_links_input_handler {
     }
 
     /**
-     * Reports whether or not the given (new) link object should be persisted
+     * Reports whether or not the given link object should be persisted
      * 
      * @param  object $link
-     * @param  int $user_id
      * @return bool
      */
-    private static function link_should_be_inserted_for_user($link, $user_id)
+    private static function link_should_be_persisted($link)
     {
         return ($link->display && ! $link->link) ? false : true;
     }
 
     /**
      * Update the given link record
+     *
+     * Optionally delete this link record if it is unncessary (display on, no url)
      * 
      * @param  object $link_record
      * @return void
      */
-    private static function update_link_record($link_record)
+    private static function update_link_record($link_record, $delete_unnecessary_links = true)
     {
         global $DB;
-
-        $DB->update_record(self::get_link_table_name(), $link_record);
+        
+        if (self::link_should_be_persisted($link_record) || ! $delete_unnecessary_links) {
+            $DB->update_record(self::get_link_table_name(), $link_record);
+        } else {
+            $DB->delete_records(self::get_link_table_name(), ['id' => $link_record->id]);
+        }
     }
 
     /**
