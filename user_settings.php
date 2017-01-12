@@ -127,6 +127,7 @@ echo $OUTPUT->header();
 
                                 echo '></td><td>';
 
+                                // if no user-course link exists, but a category link does
                                 if ( ! $course['link_id'] && $categorySettingsData[$course['course_category_id']]['link_id']) {
                                     echo '<p class="current-user-course-url default-url">(Using Category Default: ' . $categorySettingsData[$course['course_category_id']]['link_url'] . ')</p>';
 
@@ -134,7 +135,7 @@ echo $OUTPUT->header();
                                 } else if ( ! $course['link_id'] && $userSettingsData['link_id']) {
                                     echo '<p class="current-user-course-url default-url">(Using Personal Default: ' . $userSettingsData['link_url'] . ')</p>';
 
-                                // otherwise, if a system default exists
+                                // otherwise, default to system default @TODO - make sure there is a system default
                                 } else if ( ! $course['link_id']) {
                                     echo '<p class="current-user-course-url default-url">(Using System Default)</p>';
                                 }
