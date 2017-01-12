@@ -51,7 +51,7 @@ if ($USER->id != $user_id) {
 /// HANDLE FORM SUBMISSION
 /// 
 //////////////////////////////////////////////////////////
-if ($data = data_submitted()) {
+if ($data = data_submitted() and confirm_sesskey()) {
     var_dump($data);die;
 }
 
@@ -91,6 +91,7 @@ echo $OUTPUT->header();
     <form method="POST">
 
         <input type="hidden" name="id" value="<?php echo $user_id; ?>" />
+        <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
 
         <h3>Course Links and Settings</h3>
 
