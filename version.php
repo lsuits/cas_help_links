@@ -22,7 +22,7 @@
  
 defined('MOODLE_INTERNAL') || die();
  
-$plugin->version   = 2017011000;
+$plugin->version   = 2017011200;
 $plugin->requires  = 2014051200;
 $plugin->cron      = 0;
 $plugin->component = 'local_cas_help_links';

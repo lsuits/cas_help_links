@@ -52,7 +52,17 @@ if ($USER->id != $user_id) {
 /// 
 //////////////////////////////////////////////////////////
 if ($data = data_submitted() and confirm_sesskey()) {
-    var_dump($data);die;
+    
+    try {
+        
+        \local_cas_help_links_input_handler::handle_user_settings_input($data, $user_id);
+
+    } catch (Exception $e) {
+        
+        var_dump($e);die; // @TODO: make this really do something, validation? errors?
+
+    }
+
 }
 
 //////////////////////////////////////////////////////////
