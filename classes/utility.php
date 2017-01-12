@@ -196,14 +196,16 @@ class local_cas_help_links_utility {
     {
         $isChecked = is_object($link) ? $link->display : true;
 
+        $linkId = is_object($link) ? $link->id : '0';
+
         return [
             'user_id' => $user_id,
             'link_id' => is_object($link) ? $link->id : '',
             'link_display' => is_object($link) ? $link->display : '',
             'link_checked' => $isChecked ? 'checked' : '',
             'link_url' => is_object($link) ? $link->link : '',
-            'display_input_name' => \local_cas_help_links_input_handler::encode_input_name('display', 'user', $link->id, $user_id),
-            'link_input_name' => \local_cas_help_links_input_handler::encode_input_name('link', 'user', $link->id, $user_id)
+            'display_input_name' => \local_cas_help_links_input_handler::encode_input_name('display', 'user', $linkId, $user_id),
+            'link_input_name' => \local_cas_help_links_input_handler::encode_input_name('link', 'user', $linkId, $user_id)
         ];
     }
 
