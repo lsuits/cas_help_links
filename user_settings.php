@@ -81,12 +81,8 @@ $PAGE->set_context($context);
 $PAGE->requires->jquery();
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . "/local/cas_help_links/style.css"));
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . "/local/cas_help_links/vendor/styles/bootstrap-toggle.min.css"));
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . "/local/cas_help_links/module.js"));
+// $PAGE->requires->js(new moodle_url($CFG->wwwroot . "/local/cas_help_links/module.js"));
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . "/local/cas_help_links/vendor/scripts/bootstrap-toggle.min.js"));
-$PAGE->requires->js_init_call('M.local_cas_help_links.init_index', [
-    'userid' => 45,
-]);
-// $this->page->requires->string_for_js('noassignmentsselected', 'tool_assignmentupgrade'); <-- example for langs later?
 
 echo $OUTPUT->header();
 
