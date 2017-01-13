@@ -22,4 +22,33 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-//
+function local_cas_help_links_extend_settings_navigation($settingsnav, $context) {
+    global $CFG, $PAGE, $USER;
+
+    // Only add this settings item on non-site course pages.
+    if (!$PAGE->course or $PAGE->course->id == 1) {
+        return;
+    }
+
+    // Only let users with the appropriate capability see this settings item.
+    if (!has_capability('local/cas_help_links:editglobalsettings', context_system::instance())) {
+        return;
+    }
+
+    if ($settingnode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {
+        $strfoo = get_string('pluginname', 'local_cas_help_links');
+        $url = new moodle_url('/local/cas_help_links/category_settings.php');
+        $foonode = navigation_node::create(
+            $strfoo,
+            $url,
+            navigation_node::NODETYPE_LEAF,
+            'cas_help_links',
+            'cas_help_links',
+            new pix_icon('t/edit', $strfoo)
+        );
+        if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
+            $foonode->make_active();
+        }
+        $settingnode->add_node($foonode);
+    }
+}
