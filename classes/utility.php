@@ -477,7 +477,7 @@ class local_cas_help_links_utility {
             }
         // otherwise, keep only this category's prefs
         } else if ($categoryPrefs = array_where($prefs, function ($key, $pref) use ($category_id) {
-                return $pref->type == 'category' && $pref->category_id == $category_id;
+                return $pref->type == 'category' && $pref->category_id == $category_id && $pref->user_id == 0;
             })) {
 
             // get any "hide" pref for this category
