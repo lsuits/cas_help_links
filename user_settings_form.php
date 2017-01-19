@@ -49,7 +49,7 @@ class cas_form extends moodleform {
         $mform->addElement('header', 'personal_preferences', 'Personal Preferences');//get_string('titleforlegened', 'modulename'));
         foreach ($courses as $course) {
             $cfname = $course['course_fullname'] . ' <strong>(' . $course['course_category_name'] . ')</strong>';
-            $mform->addElement('checkbox', $course['display_input_name'], 'Hide link for this course: ', null, $attributes);
+            $mform->addElement('advcheckbox', $course['display_input_name'], 'Hide link for this course: ', null, $attributes, array(0, 1));
             $mform->addElement('text', $course['link_input_name'], $cfname, null);
             $mform->setDefault($course['display_input_name'], $course['link_checked']);
             $mform->disabledIf($course['link_input_name'], $course['display_input_name'], 'checked');
