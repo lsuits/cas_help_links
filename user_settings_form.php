@@ -49,7 +49,7 @@ class cas_form extends moodleform {
         $mform->addElement('header', 'personal_preferences', 'Personal Preferences');//get_string('titleforlegened', 'modulename'));
         foreach ($courses as $course) {
             $cfname = $course['course_fullname'] . ' <strong>(' . $course['course_category_name'] . ')</strong>';
-            $mform->addElement('advcheckbox', $course['display_input_name'], 'Hide link for this course: ', null, $attributes, array(0, 1));
+            $mform->addElement('advcheckbox', $course['display_input_name'], 'Hide link for this course: ', null, $attributes, array(1, 0));
             $mform->addElement('text', $course['link_input_name'], $cfname, null);
             $mform->setDefault($course['display_input_name'], $course['link_checked']);
             $mform->disabledIf($course['link_input_name'], $course['display_input_name'], 'checked');
@@ -60,17 +60,17 @@ class cas_form extends moodleform {
         $mform->addElement('header', 'category_preferences', 'Category Preferences');//get_string('titleforlegened', 'modulename'));
         foreach ($categories as $category) {
             $cfname = $category['category_name'];
-            $mform->addElement('checkbox', $category['display_input_name'], 'Hide all category links: ');
+            $mform->addElement('advcheckbox', $category['display_input_name'], 'Hide all category links: ', null, $attributes, array(1, 0));
             $mform->addElement('text', $category['link_input_name'], $cfname, null);
             $mform->disabledIf($category['link_input_name'], $category['display_input_name'], 'checked');
 
-            $mform->setDefault($category['display_input_name'],  $category['link_checked']);
+            $mform->setDefault($category['display_input_name'], $category['link_checked']);
             $mform->setDefault($category['link_input_name'], $category['link_url']);
             $mform->setType($category['link_input_name'], PARAM_TEXT);
         }
 
         $mform->addElement('header', 'user_preferences', 'User Preferences');//get_string('titleforlegened', 'modulename'));
-        $mform->addElement('checkbox', $userSettingsData['display_input_name'], 'Hide all my links: ');
+        $mform->addElement('advcheckbox', $userSettingsData['display_input_name'], 'Hide all my links: ', null, $attributes, array(1, 0));
         $mform->addElement('text', $userSettingsData['link_input_name'], NULL, null);
         $mform->disabledIf($userSettingsData['link_input_name'], $userSettingsData['display_input_name'], 'checked');
 

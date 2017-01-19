@@ -181,7 +181,7 @@ class local_cas_help_links_utility {
                 'course_category_name' => $courseArray->name,
                 'link_id' => $linkId,
                 'link_display' => $linkExistsForCourse ? $userCourseLinks[$course->id]->display : '0',
-                'link_checked' => $isChecked ? 'checked' : '',
+                'link_checked' => $isChecked ? '1' : '0',
                 'link_url' => $linkExistsForCourse ? $userCourseLinks[$course->id]->link : '',
                 'display_input_name' => \local_cas_help_links_input_handler::encode_input_name('display', 'course', $linkId, $course->id),
                 'link_input_name' => \local_cas_help_links_input_handler::encode_input_name('link', 'course', $linkId, $course->id)
@@ -218,7 +218,7 @@ class local_cas_help_links_utility {
                 'category_name' => $category->name,
                 'link_id' => $linkId,
                 'link_display' => $linkExistsForCategory ? $categoryLinks[$category->id]->display : '0',
-                'link_checked' => $isChecked ? 'checked' : '',
+                'link_checked' => $isChecked ? '1' : '0',
                 'link_url' => $linkExistsForCategory ? $categoryLinks[$category->id]->link : '',
                 'display_input_name' => \local_cas_help_links_input_handler::encode_input_name('display', 'category', $linkId, $category->id),
                 'link_input_name' => \local_cas_help_links_input_handler::encode_input_name('link', 'category', $linkId, $category->id)
@@ -244,7 +244,7 @@ class local_cas_help_links_utility {
             'user_id' => $user_id,
             'link_id' => is_object($link) ? $link->id : '',
             'link_display' => is_object($link) ? $link->display : '',
-            'link_checked' => $isChecked ? 'checked' : '',
+            'link_checked' => $isChecked ? '1' : '0',
             'link_url' => is_object($link) ? $link->link : '',
             'display_input_name' => \local_cas_help_links_input_handler::encode_input_name('display', 'user', $linkId, $user_id),
             'link_input_name' => \local_cas_help_links_input_handler::encode_input_name('link', 'user', $linkId, $user_id)
