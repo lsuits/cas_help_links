@@ -167,7 +167,7 @@ class local_cas_help_links_utility {
 
             $linkExistsForCourse = array_key_exists($courseArray->id, $userCourseLinks);
 
-            $isChecked = $linkExistsForCourse ? $userCourseLinks[$course->id]->display : false;
+            $isChecked = $linkExistsForCourse ? $userCourseLinks[$course->id]->display : true;
 
             $linkId = $linkExistsForCourse ? $userCourseLinks[$course->id]->id : '0';
 
@@ -208,7 +208,7 @@ class local_cas_help_links_utility {
 
             $linkExistsForCategory = array_key_exists($categoryArray->id, $categoryLinks);
 
-            $isChecked = $linkExistsForCategory ? $categoryLinks[$category->id]->display : false;
+            $isChecked = $linkExistsForCategory ? $categoryLinks[$category->id]->display : true;
 
             $linkId = $linkExistsForCategory ? $categoryLinks[$category->id]->id : '0';
 
@@ -236,7 +236,7 @@ class local_cas_help_links_utility {
      */
     private static function transform_user_data($link, $user_id)
     {
-        $isChecked = is_object($link) ? $link->display : false;
+        $isChecked = is_object($link) ? $link->display : true;
 
         $linkId = is_object($link) ? $link->id : '0';
 
