@@ -42,4 +42,72 @@ h1 {
   .category-list-container .current-user-category-url span.url {
     text-decoration: underline; }
 
+/*
+#page-local-cas_help_links-user_settings #id_personal_preferences .fitem_ftext>.fitemtitle {
+  width: 40%;
+  margin: 0 10px 0 10px;
+}
+
+#page-local-cas_help_links-user_settings #id_personal_preferences .fitem_ftext>.ftext>input {
+  width: 30%;
+  margin: 0 10px 0 10px;
+}
+
+#page-local-cas_help_links-user_settings #id_personal_preferences .fitem_fcheckbox {
+  float: left;
+  width: auto;
+}
+
+#page-local-cas_help_links-user_settings div.fitem_ftext div.fitemtitle > label {
+  white-space: nowrap;
+}
+
+input[type="checkbox"].cas-display-toggle {
+  visibility: hidden;
+}
+
+input[type="checkbox"].cas-display-toggle::before,
+input[type="checkbox"].cas-display-toggle::after {
+  visibility: visible;
+  content: '';
+  margin: 0;
+  top: 0;
+  left: 0;
+}
+
+input[type="checkbox"].cas-display-toggle:hover {
+  cursor: pointer;
+}
+
+input[type="checkbox"].cas-display-toggle::before {
+  float: left;
+  width: 45px;
+  height: 24px;
+  background-color: #A8AAC1;
+  border-radius: 12px;
+}
+
+input[type="checkbox"].cas-display-toggle::after {
+  float: left;
+  margin-top: -20px;
+  margin-left: 24px;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background-color: #00ff00;
+  transition: margin-left .25s, background-color .25s;
+}
+
+input[type="checkbox"].cas-display-toggle:checked::after {
+  margin-left: 3px;
+  background-color: #ff0000;
+  transition: margin-left .25s, background-color .25s;
+}
+
+label {
+  margin-left: 40px;
+  font-weight: bold;
+}
+*/
+
 /*# sourceMappingURL=style.css.map */

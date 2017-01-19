@@ -72,13 +72,16 @@ class local_cas_help_links_utility {
         global $DB;
         $offset = (get_config('enrol_ues', 'sub_days') * 86400);
 
-        $result = $DB->get_records_sql('SELECT DISTINCT u.id, c.id, c.fullname, c.shortname, c.idnumber, c.category FROM {enrol_ues_teachers} t
+        $result = $DB->get_records_sql('SELECT DISTINCT u.id, c.id, c.fullname, c.shortname, c.idnumber, c.category, cc.name FROM {enrol_ues_teachers} t
             INNER JOIN {user} u ON u.id = t.userid
             INNER JOIN {enrol_ues_sections} sec ON sec.id = t.sectionid
+            INNER JOIN {enrol_ues_courses} cou ON cou.id = sec.courseid
             INNER JOIN {enrol_ues_semesters} sem ON sem.id = sec.semesterid
             INNER JOIN {course} c ON c.idnumber = sec.idnumber
+            INNER JOIN {course_categories} cc ON cc.id = c.category
             WHERE sec.idnumber IS NOT NULL
             AND sec.idnumber <> ""
+            AND cou.cou_number < "5000"
             AND t.primary_flag = "1"
             AND t.status = "enrolled"
             AND sem.classes_start < ' . (time() + $offset) . ' 
@@ -102,6 +105,7 @@ class local_cas_help_links_utility {
         $result = $DB->get_records_sql('SELECT DISTINCT u.id, cc.id, cc.name FROM {enrol_ues_teachers} t
             INNER JOIN {user} u ON u.id = t.userid
             INNER JOIN {enrol_ues_sections} sec ON sec.id = t.sectionid
+            INNER JOIN {enrol_ues_courses} cou ON cou.id = sec.courseid
             INNER JOIN {enrol_ues_semesters} sem ON sem.id = sec.semesterid
             INNER JOIN {course} c ON c.idnumber = sec.idnumber
             INNER JOIN {course_categories} cc ON cc.id = c.category
@@ -109,6 +113,7 @@ class local_cas_help_links_utility {
             AND sec.idnumber <> ""
             AND t.primary_flag = "1"
             AND t.status = "enrolled"
+            AND cou.cou_number < "5000"
             AND sem.classes_start < ' . (time() + $offset) . '
             AND sem.grades_due > ' . time() . '
             AND u.id = ?', array($user_id));
@@ -162,7 +167,7 @@ class local_cas_help_links_utility {
 
             $linkExistsForCourse = array_key_exists($courseArray->id, $userCourseLinks);
 
-            $isChecked = $linkExistsForCourse ? $userCourseLinks[$course->id]->display : true;
+            $isChecked = $linkExistsForCourse ? $userCourseLinks[$course->id]->display : false;
 
             $linkId = $linkExistsForCourse ? $userCourseLinks[$course->id]->id : '0';
 
@@ -173,6 +178,7 @@ class local_cas_help_links_utility {
                 'course_shortname' => $course->shortname,
                 'course_idnumber' => $course->idnumber,
                 'course_category_id' => $course->category,
+                'course_category_name' => $courseArray->name,
                 'link_id' => $linkId,
                 'link_display' => $linkExistsForCourse ? $userCourseLinks[$course->id]->display : '0',
                 'link_checked' => $isChecked ? 'checked' : '',
@@ -202,7 +208,7 @@ class local_cas_help_links_utility {
 
             $linkExistsForCategory = array_key_exists($categoryArray->id, $categoryLinks);
 
-            $isChecked = $linkExistsForCategory ? $categoryLinks[$category->id]->display : true;
+            $isChecked = $linkExistsForCategory ? $categoryLinks[$category->id]->display : false;
 
             $linkId = $linkExistsForCategory ? $categoryLinks[$category->id]->id : '0';
 
@@ -230,7 +236,7 @@ class local_cas_help_links_utility {
      */
     private static function transform_user_data($link, $user_id)
     {
-        $isChecked = is_object($link) ? $link->display : true;
+        $isChecked = is_object($link) ? $link->display : false;
 
         $linkId = is_object($link) ? $link->id : '0';
 
@@ -383,11 +389,13 @@ class local_cas_help_links_utility {
 
         $result = $DB->get_records_sql('SELECT DISTINCT(t.userid), cts.requesterid FROM {enrol_ues_sections} sec
             INNER JOIN {enrol_ues_semesters} sem ON sem.id = sec.semesterid
+            INNER JOIN {enrol_ues_courses} cou ON cou.id = sec.courseid
             INNER JOIN {enrol_ues_teachers} t ON t.sectionid = sec.id
             LEFT JOIN {enrol_cps_team_sections} cts ON cts.sectionid = sec.id
             WHERE t.primary_flag = 1
             AND sec.idnumber IS NOT NULL
             AND sec.idnumber <> ""
+            AND cou.cou_number < "5000"
             AND sem.classes_start < ' . (time() + $offset) . '
             AND sem.grades_due > ' . time() . '
             AND sec.idnumber = ?', array($idnumber));

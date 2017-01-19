@@ -84,8 +84,11 @@ $PAGE->requires->css(new moodle_url($CFG->wwwroot . "/local/cas_help_links/vendo
 // $PAGE->requires->js(new moodle_url($CFG->wwwroot . "/local/cas_help_links/module.js"));
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . "/local/cas_help_links/vendor/scripts/bootstrap-toggle.min.js"));
 
-echo $OUTPUT->header();
-
+$output = $PAGE->get_renderer('local_cas_help_links');
+echo $output->header();
+echo $output->cas_help_links($courseSettingsData,$categorySettingsData,$userSettingsData);
+echo $output->footer();
+/*
 ?>
 
 <div id="component-user-settings">
@@ -218,3 +221,4 @@ echo $OUTPUT->header();
 <?php
 
 echo $OUTPUT->footer();
+*/

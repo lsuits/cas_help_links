@@ -85,7 +85,7 @@ class local_cas_help_links_input_handler {
      */
     private static function link_should_be_persisted($link)
     {
-        return ($link->display && ! $link->link) ? false : true;
+        return ($link->display && ! $link->link) ? true : false;
     }
 
     /**
