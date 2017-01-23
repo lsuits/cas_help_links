@@ -85,7 +85,7 @@ class local_cas_help_links_input_handler {
      */
     private static function link_should_be_persisted($link)
     {
-        return ($link->display && ! $link->link) ? true : false;
+        return ($link->display && ! $link->link) ? false : true;
     }
 
     /**
@@ -227,7 +227,7 @@ class local_cas_help_links_input_handler {
             $decodedInput['input_name'] = $name;
             
             if ($decodedInput['field'] == 'display') {
-                $decodedInput['input_value'] = $value ? 1 : 0;
+                $decodedInput['input_value'] = $value ? 0 : 1;
             } else {
                 $decodedInput['input_value'] = $value;
             }

@@ -46,35 +46,44 @@ class cas_form extends moodleform {
         $mform->addElement('hidden', 'id', $userSettingsData['user_id']);
         $mform->addElement('hidden', 'sesskey', sesskey());
         $mform->setType('id', PARAM_INT);
+        
         $mform->addElement('header', 'personal_preferences', 'Personal Preferences');//get_string('titleforlegened', 'modulename'));
+        
         foreach ($courses as $course) {
-            $cfname = $course['course_fullname'] . ' <strong>(' . $course['course_category_name'] . ')</strong>';
-            $mform->addElement('advcheckbox', $course['display_input_name'], 'Hide link for this course: ', null, $attributes, array(1, 0));
-            $mform->addElement('text', $course['link_input_name'], $cfname, null);
-            $mform->setDefault($course['display_input_name'], $course['link_checked']);
+            // "hide" checkbox
+            $mform->addElement('advcheckbox', $course['display_input_name'], 'Hide link for this course: ', null, $attributes, array(0, 1));
+            $mform->setDefault($course['display_input_name'], $course['hide_link']);
+            
+            // url input
+            $mform->addElement('text', $course['link_input_name'], $course['course_fullname'] . ' (' . $course['course_category_name'] . ')', null);
             $mform->disabledIf($course['link_input_name'], $course['display_input_name'], 'checked');
             $mform->setDefault($course['link_input_name'], $course['link_url']);
             $mform->setType($course['link_input_name'], PARAM_TEXT);
         }
 
         $mform->addElement('header', 'category_preferences', 'Category Preferences');//get_string('titleforlegened', 'modulename'));
+        
         foreach ($categories as $category) {
-            $cfname = $category['category_name'];
-            $mform->addElement('advcheckbox', $category['display_input_name'], 'Hide all category links: ', null, $attributes, array(1, 0));
-            $mform->addElement('text', $category['link_input_name'], $cfname, null);
+            // "hide" checkbox
+            $mform->addElement('advcheckbox', $category['display_input_name'], 'Hide all category links: ', null, $attributes, array(0, 1));
+            $mform->setDefault($category['display_input_name'], $category['hide_link']);
+            
+            // url input
+            $mform->addElement('text', $category['link_input_name'], $category['category_name'], null);
             $mform->disabledIf($category['link_input_name'], $category['display_input_name'], 'checked');
-
-            $mform->setDefault($category['display_input_name'], $category['link_checked']);
             $mform->setDefault($category['link_input_name'], $category['link_url']);
             $mform->setType($category['link_input_name'], PARAM_TEXT);
         }
 
         $mform->addElement('header', 'user_preferences', 'User Preferences');//get_string('titleforlegened', 'modulename'));
-        $mform->addElement('advcheckbox', $userSettingsData['display_input_name'], 'Hide all my links: ', null, $attributes, array(1, 0));
-        $mform->addElement('text', $userSettingsData['link_input_name'], NULL, null);
-        $mform->disabledIf($userSettingsData['link_input_name'], $userSettingsData['display_input_name'], 'checked');
 
-        $mform->setDefault($userSettingsData['display_input_name'],  $userSettingsData['link_checked']);
+        // "hide" checkbox
+        $mform->addElement('advcheckbox', $userSettingsData['display_input_name'], 'Hide all my links: ', null, $attributes, array(0, 1));
+        $mform->setDefault($userSettingsData['display_input_name'], $userSettingsData['hide_link']);
+        
+        // url input
+        $mform->addElement('text', $userSettingsData['link_input_name'], 'My Default Link', null);
+        $mform->disabledIf($userSettingsData['link_input_name'], $userSettingsData['display_input_name'], 'checked');
         $mform->setDefault($userSettingsData['link_input_name'], $userSettingsData['link_url']);
         $mform->setType($userSettingsData['link_input_name'], PARAM_TEXT);
 
