@@ -28,12 +28,21 @@ defined('MOODLE_INTERNAL') || die;
 require_once $CFG->libdir.'/outputcomponents.php';
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/cas_help_links/user_settings_form.php');
+require_once($CFG->dirroot.'/local/cas_help_links/category_settings_form.php');
 
 class local_cas_help_links_renderer extends plugin_renderer_base {
 
     public function cas_help_links($courseSettingsData,$categorySettingsData,$userSettingsData) {
         global $USER;
         $mform = new cas_form(null, array('courseSettingsData' => $courseSettingsData,'categorySettingsData' => $categorySettingsData,'userSettingsData' => $userSettingsData));
+
+        $out = $mform->display();
+        return $out;
+    }
+
+    public function cas_category_links($categorySettingsData) {
+        global $USER;
+        $mform = new cas_cat_form(null, array('categorySettingsData' => $categorySettingsData));
 
         $out = $mform->display();
         return $out;

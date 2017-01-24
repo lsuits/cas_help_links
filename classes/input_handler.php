@@ -9,8 +9,7 @@ class local_cas_help_links_input_handler {
      * @param  int $user_id
      * @return void
      */
-    public static function handle_user_settings_input($post_data, $user_id)
-    {
+    public static function handle_user_settings_input($post_data, $user_id) {
         $link_objects = self::get_link_input_objects($post_data, $user_id);
 
         // iterate through all link objects
@@ -19,7 +18,6 @@ class local_cas_help_links_input_handler {
             if ($link->id) {
                 // update the cas_help_link record
                 self::update_link_record($link, true);
-
             // otherwise, if input is given for a non-exisitent link
             } else {
                 if (self::link_should_be_persisted($link))
@@ -299,5 +297,4 @@ class local_cas_help_links_input_handler {
             'field' => (string) $exploded[4],
         ];
     }
-
 }

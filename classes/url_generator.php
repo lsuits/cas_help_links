@@ -9,7 +9,7 @@ class local_cas_help_links_url_generator {
      * @param  bool $editLinkForInstructor  if true, will return a link to edit this setting
      * @return array  display|url|label
      */
-    public static function getUrlArrayForCourse($course, $editLinkForInstructor = true)
+    public static function getUrlArrayForCourse($course, $editLinkForInstructor = false)
     {
         // if this plugin is disabled, do not display
         if ( ! \local_cas_help_links_utility::isPluginEnabled())
@@ -21,15 +21,34 @@ class local_cas_help_links_url_generator {
         // if we can't find a primary instructor for the given course, do not display
         if ( ! $primary_instructor_user_id = \local_cas_help_links_utility::getPrimaryInstructorId($course->idnumber)) {
             return self::getEmptyHelpUrlArray();
-        }
-
-        // if primary instructor is requesting
-        if ($primary_instructor_user_id == \local_cas_help_links_utility::getAuthUserId() && $editLinkForInstructor) {
-            // return edit link
-            return self::getCourseEditHelpUrlArray($course);
         } else {
             //  otherwise return link pref data
             return self::getDisplayHelpUrlArray($course_id, $category_id, $primary_instructor_user_id);
+        }
+    }
+
+    /**
+     * Returns an array that includes data about the appropriate CAS Help link to be displayed for this course/user
+     *
+     * @param  object $course  moodle course object
+     * @param  bool $editLinkForInstructor  if true, will return a link to edit this setting
+     * @return array  display|url|label
+     */
+    public static function getUrlForUser($user_id) {
+        global $CFG;
+        // if this plugin is disabled, do not display
+        if ( ! \local_cas_help_links_utility::isPluginEnabled())
+            return self::getEmptyHelpUrlArray();
+
+        // if primary instructor is requesting
+        if (\ues_user::is_teacher($user_id)) {
+            // return edit link
+            return self::getCourseEditHelpUrl();
+        } else if (has_capability('local/cas_help_links:editglobalsettings', context_system::instance())) {
+            return self::getCategoryEditHelpUrl(); 
+        } else {
+            //  otherwise rdo not display
+            return self::getEmptyHelpUrlArray();
         }
     }
 
@@ -47,6 +66,32 @@ class local_cas_help_links_url_generator {
             'display' => true,
             'url' => $CFG->wwwroot . '/local/cas_help_links/user_settings.php?id=' . \local_cas_help_links_utility::getAuthUserId(),
             'label' => get_string('settings_button_label', 'local_cas_help_links'),
+        ];
+
+        return $urlArray;
+    }
+
+    private static function getCourseEditHelpUrl()
+    {
+        global $CFG, $USER;
+
+        $urlArray = [
+            'display' => true,
+            'url' => $CFG->wwwroot . '/local/cas_help_links/user_settings.php?id=' . $USER->id,
+            'label' => get_string('settings_button_label', 'local_cas_help_links'),
+        ];
+
+        return $urlArray;
+    }
+
+    private static function getCategoryEditHelpUrl()
+    {
+        global $CFG;
+
+        $urlArray = [
+            'display' => true,
+            'url' => $CFG->wwwroot . '/local/cas_help_links/category_settings.php',
+            'label' => get_string('cas_help_links:editcategorysettings', 'local_cas_help_links'),
         ];
 
         return $urlArray;
