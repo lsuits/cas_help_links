@@ -103,7 +103,7 @@ class cas_form extends moodleform {
         $mform->setDefault($userSettingsData['display_input_name'], $userSettingsData['hide_link']);
         
         // url input
-        $mform->addElement('text', $userSettingsData['link_input_name'], $my_default_link, null);
+        $mform->addElement('text', $userSettingsData['link_input_name'], $my_default_link);
         $mform->disabledIf($userSettingsData['link_input_name'], $userSettingsData['display_input_name'], 'checked');
         $mform->setDefault($userSettingsData['link_input_name'], $userSettingsData['link_url']);
         $mform->setType($userSettingsData['link_input_name'], PARAM_TEXT);
