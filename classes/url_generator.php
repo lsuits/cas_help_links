@@ -53,8 +53,8 @@ class local_cas_help_links_url_generator {
     }
 
     /**
-     * Returns a appropriate URL for editting CAS help link settings
-     * 
+     * Returns an appropriate URL for editing CAS help link settings
+     * TODO UNUSED - REMOVE CHAD PLEASE LOOK AT 
      * @param  object $course  moodle course object
      * @return string
      */
@@ -71,6 +71,12 @@ class local_cas_help_links_url_generator {
         return $urlArray;
     }
 
+    /**
+     * Returns an appropriate URL for editing CAS course links
+     *
+     * @param  object $USER  moodle USER object
+     * @return string
+     */
     private static function getCourseEditHelpUrl()
     {
         global $CFG, $USER;
@@ -84,6 +90,11 @@ class local_cas_help_links_url_generator {
         return $urlArray;
     }
 
+    /**
+     * Returns an appropriate URL for editing CAS category links
+     *
+     * @return string
+     */
     private static function getCategoryEditHelpUrl()
     {
         global $CFG;

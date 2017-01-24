@@ -61,9 +61,9 @@ class cas_form extends moodleform {
         
         foreach ($courses as $course) {
             if ( !$course['link_id']) {
-                $defaultlink = $course['course_fullname'] . ' (' . $course['course_category_name'] . ')' . ' &mdash; Using system default';
+                $defaultlink = 'Inherited';
             } else {
-                $defaultlink = $course['course_fullname'] . ' (' . $course['course_category_name'] . ')' . ' &mdash; ' . $course['link_url']; 
+                $defaultlink = $course['link_url']; 
             }
 
             // "hide" checkbox
@@ -71,21 +71,26 @@ class cas_form extends moodleform {
             $mform->setDefault($course['display_input_name'], $course['hide_link']);
             
             // url input
-            $mform->addElement('text', $course['link_input_name'], $course['course_fullname'] . ' (' . $course['course_category_name'] . ')', NULL, $defaultlink);
+            $mform->addElement('text', $course['link_input_name'], $course['course_fullname']);
             $mform->disabledIf($course['link_input_name'], $course['display_input_name'], 'checked');
             $mform->setDefault($course['link_input_name'], $course['link_url']);
-            $mform->setType($course['link_input_name'], PARAM_RAW_TRIMMED);
+            $mform->setType($course['link_input_name'], PARAM_TEXT);
         }
 
         $mform->addElement('header', 'category_preferences', $pcategory_header);
         
         foreach ($categories as $category) {
+            if ( !$category['link_id']) {
+                $defaultlink = 'Inherited';
+            } else {
+                $defaultlink = $category['link_url'];
+            }
             // "hide" checkbox
             $mform->addElement('advcheckbox', $category['display_input_name'], $hide_category_links, null, $attributes, array(0, 1));
             $mform->setDefault($category['display_input_name'], $category['hide_link']);
             
             // url input
-            $mform->addElement('text', $category['link_input_name'], $category['category_name'], null);
+            $mform->addElement('text', $category['link_input_name'], $category['category_name']);
             $mform->disabledIf($category['link_input_name'], $category['display_input_name'], 'checked');
             $mform->setDefault($category['link_input_name'], $category['link_url']);
             $mform->setType($category['link_input_name'], PARAM_TEXT);
