@@ -36,6 +36,7 @@ class local_cas_help_links_url_generator {
      */
     public static function getUrlForUser($user_id) {
         global $CFG;
+        require_once $CFG->dirroot . '/blocks/cps/classes/lib.php';
         // if this plugin is disabled, do not display
         if ( ! \local_cas_help_links_utility::isPluginEnabled())
             return self::getEmptyHelpUrlArray();
