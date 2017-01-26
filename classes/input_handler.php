@@ -242,6 +242,8 @@ class local_cas_help_links_input_handler {
      */
     private static function format_url($url)
     {
+        $url = trim($url);
+
         if (substr($url, 0, 7) == 'http://' || substr($url, 0, 8) == 'https://') {
             return $url;
         }
