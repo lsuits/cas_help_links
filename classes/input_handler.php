@@ -7,7 +7,7 @@ class local_cas_help_links_input_handler {
      * 
      * @param  array $post_data
      * @param  int $user_id
-     * @return void
+     * @return boolean
      */
     public static function handle_user_settings_input($post_data, $user_id) {
         $link_objects = self::get_link_input_objects($post_data, $user_id);
@@ -24,13 +24,15 @@ class local_cas_help_links_input_handler {
                     self::insert_link_record($link);
             }
         }
+
+        return true;
     }
 
     /**
      * Accepts a given array of posted category link setting data and persists appropriately
      * 
      * @param  array $post_data
-     * @return void
+     * @return boolean
      */
     public static function handle_category_settings_input($post_data)
     {
@@ -49,6 +51,8 @@ class local_cas_help_links_input_handler {
                     self::insert_link_record($link);
             }
         }
+
+        return true;
     }
 
     /**
@@ -159,6 +163,8 @@ class local_cas_help_links_input_handler {
         $output = [];
 
         foreach ($link_inputs as $input) {
+            $input = self::sanitize_link_input($input);
+
             // if this input has not been added to output yet
             if ( ! array_key_exists($input['id'], $output)) {
                 $output[$input['id']] = self::transform_link_input_to_object($input);
@@ -170,6 +176,39 @@ class local_cas_help_links_input_handler {
         }
 
         return $output;
+    }
+
+    /**
+     * Checks whether the given input array contains link information,
+     * if so, asserts that the url contains an appropriate prefix
+     * 
+     * @param  array $input
+     * @return array
+     */
+    private static function sanitize_link_input($input)
+    {
+        if (array_key_exists('field', $input)) {
+            if ($input['field'] == 'link' && $input['input_value']) {
+                $input['input_value'] = self::format_url($input['input_value']);
+            }
+        }
+
+        return $input;
+    }
+
+    /**
+     * Returns the given URL with an apprpriate prefix (defaults to: http://)
+     * 
+     * @param  string $url
+     * @return string
+     */
+    private static function format_url($url)
+    {
+        if (substr($url, 0, 7) == 'http://' || substr($url, 0, 8) == 'https://') {
+            return $url;
+        }
+
+        return 'http://' . $url;
     }
 
     /**

@@ -39,14 +39,18 @@ require_capability('local/cas_help_links:editglobalsettings', $context);
 /// HANDLE FORM SUBMISSION
 /// 
 //////////////////////////////////////////////////////////
+$submit_success = false;
+
 if ($data = data_submitted() and confirm_sesskey()) {
     
     try {
         
-        \local_cas_help_links_input_handler::handle_category_settings_input($data); // @TODO - make this
+        $submit_success = \local_cas_help_links_input_handler::handle_category_settings_input($data); // @TODO - make this
 
     } catch (Exception $e) {
         
+        $submit_success = false;
+
         var_dump($e);die; // @TODO: make this really do something, validation? errors?
 
     }
@@ -68,11 +72,16 @@ $categorySettingsData = \local_cas_help_links_utility::get_all_category_settings
 $PAGE->set_context($context);
 $PAGE->requires->jquery();
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . "/local/cas_help_links/style.css"));
-$PAGE->requires->css(new moodle_url($CFG->wwwroot . "/local/cas_help_links/vendor/styles/bootstrap-toggle.min.css"));
-// $PAGE->requires->js(new moodle_url($CFG->wwwroot . "/local/cas_help_links/module.js"));
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . "/local/cas_help_links/vendor/scripts/bootstrap-toggle.min.js"));
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . "/local/cas_help_links/module.js"));
+
+$PAGE->requires->js_init_call('M.local_cas_help_links.init_index');
 
 $output = $PAGE->get_renderer('local_cas_help_links');
 echo $output->header();
+
+if ($submit_success) {
+    echo $OUTPUT->notification(get_string('submit_success', 'local_cas_help_links'), 'notifysuccess');
+}
+
 echo $output->cas_category_links($categorySettingsData);
 echo $output->footer();

@@ -46,3 +46,6 @@ $string['hide_category_links'] = 'Hide category links: ';
 $string['user_header'] = 'User Personal Preferences';
 $string['hide_user_links'] = 'Hide all my links: ';
 $string['my_default_link'] = 'My default link';
+
+$string['submit_success'] = 'You preferences have been successfully updated.';
+$string['submit_error'] = 'Please make sure your links are in the proper URL format.';

@@ -57,6 +57,8 @@ class cas_form extends moodleform {
         $mform->addElement('hidden', 'sesskey', sesskey());
         $mform->setType('id', PARAM_INT);
         
+        $mform->addElement('html', '<p class="error-notification-header">' . get_string('submit_error', 'local_cas_help_links') .'</p>');
+
         $mform->addElement('header', 'personal_preferences', $pcourseheader);
         
         foreach ($courses as $course) {
@@ -71,7 +73,7 @@ class cas_form extends moodleform {
             $mform->setDefault($course['display_input_name'], $course['hide_link']);
             
             // url input
-            $mform->addElement('text', $course['link_input_name'], $course['course_fullname']);
+            $mform->addElement('text', $course['link_input_name'], $course['course_fullname'], ['class' => 'url-input']);
             $mform->disabledIf($course['link_input_name'], $course['display_input_name'], 'checked');
             $mform->setDefault($course['link_input_name'], $course['link_url']);
             $mform->setType($course['link_input_name'], PARAM_TEXT);
