@@ -20,7 +20,7 @@ class local_cas_help_links_input_handler {
                 self::update_link_record($link, true);
             // otherwise, if input is given for a non-exisitent link
             } else {
-                if (self::link_should_be_persisted($link))
+                if (self::link_should_be_persisted($link, true))
                     self::insert_link_record($link);
             }
         }
@@ -47,7 +47,7 @@ class local_cas_help_links_input_handler {
 
             // otherwise, if input is given for a non-exisitent link
             } else {
-                if (self::link_should_be_persisted($link))
+                if (self::link_should_be_persisted($link, true))
                     self::insert_link_record($link);
             }
         }
@@ -83,11 +83,49 @@ class local_cas_help_links_input_handler {
      * Reports whether or not the given link object should be persisted
      * 
      * @param  object $link
+     * @param  boolean $check_for_duplicate_record
      * @return bool
      */
-    private static function link_should_be_persisted($link)
-    {
+    private static function link_should_be_persisted($link, $check_for_duplicate_record = false)
+    {        
+        if ($check_for_duplicate_record && self::identical_link_exists($link)) {
+            return false;
+        }
+
         return ($link->display && ! $link->link) ? false : true;
+    }
+
+    /**
+     * Reports whether or not identical link record(s) exist for this link object
+     * 
+     * @param  object $link link record to be persisted
+     * @return boolean
+     */
+    private static function identical_link_exists($link)
+    {
+        global $DB;
+
+        $params = [
+            'type' => $link->type,
+            'display' => $link->display,
+            'link' => $link->link,
+        ];
+
+        if (property_exists($link, 'category_id')) {
+            $params['category_id'] = $link->category_id;
+        }
+
+        if (property_exists($link, 'course_id')) {
+            $params['course_id'] = $link->course_id;
+        }
+
+        if (property_exists($link, 'user_id')) {
+            $params['user_id'] = $link->user_id;
+        }
+
+        $existing_records = $DB->get_records(self::get_link_table_name(), $params);
+
+        return ! $existing_records ? false : true;
     }
 
     /**
