@@ -227,7 +227,7 @@ class local_cas_help_links_input_handler {
     {
         if (array_key_exists('field', $input)) {
             if ($input['field'] == 'link' && $input['input_value']) {
-                $input['input_value'] = self::format_url($input['input_value']);
+                $input['input_value'] = self::format_url(trim($input['input_value']));
             }
         }
 
@@ -243,10 +243,16 @@ class local_cas_help_links_input_handler {
     private static function format_url($url)
     {
         if (substr($url, 0, 7) == 'http://' || substr($url, 0, 8) == 'https://') {
-            return $url;
+            if (preg_match( '/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'((:[0-9]{1,5})?\\/.*)?$/i' ,$url)) {
+                return $url;
+            } else {
+                return false;
+            }
+        } else if (preg_match( '/^[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'((:[0-9]{1,5})?\\/.*)?$/i' ,$url)) {
+                return 'http://' . $url;
+            } else {
+                return false;
         }
-
-        return 'http://' . $url;
     }
 
     /**

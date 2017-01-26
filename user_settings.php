@@ -37,9 +37,9 @@ require_login();
 
 // make sure that the user being referenced is the auth user
 if ($USER->id != $user_id) {
-    echo 'sorry, no';
-    // redirect (SOME URL HERE); ??
-    die;
+    echo 'Access denied. Security violation.';
+    header('Location: ' . $CFG->wwwroot, false, 302);
+    exit();
 }
 
 //////////////////////////////////////////////////////////
