@@ -15,7 +15,7 @@ M.local_cas_help_links.init_index = function(Y, userid) {
             $('.alert.alert-success').toggle(false);
             
             // show the notification header
-            $('.error-notification-header').toggle(true);
+            $('.error-notification-header.alert.alert-error').toggle(true);
 
             event.preventDefault();
         }
@@ -44,7 +44,7 @@ M.local_cas_help_links.is_valid_url = function(urlInput) {
         return true;
     }
 
-    var match = urlInput.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+    var match = urlInput.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
     
     if (match == null) {
         return false;

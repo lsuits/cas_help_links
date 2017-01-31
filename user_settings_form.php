@@ -30,8 +30,8 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 require_once($CFG->libdir.'/formslib.php');
-require_once("$CFG->libdir/filelib.php");
-require_once("$CFG->libdir/resourcelib.php");
+require_once($CFG->libdir.'/filelib.php');
+require_once($CFG->libdir.'/resourcelib.php');
 
 class cas_form extends moodleform {
 
@@ -40,6 +40,22 @@ class cas_form extends moodleform {
         $mform = $this->_form;
         $attributes = array(
         'class' => 'cas-display-toggle'
+        );
+
+        /* A novel, if not sloppy hack to highlight input boxes
+        if (isset($OUTPUT->linktestfail)) {
+            $lattributes = array(
+                'class' => 'url-input has-error'
+            );
+        } else {
+            $lattributes = array(
+                'class' => 'url-input'
+            );
+        }
+        */
+
+        $lattributes = array(
+            'class' => 'url-input'
         );
 
         $pcourseheader = get_string('pcourse_header', 'local_cas_help_links');
@@ -57,7 +73,7 @@ class cas_form extends moodleform {
         $mform->addElement('hidden', 'sesskey', sesskey());
         $mform->setType('id', PARAM_INT);
         
-        $mform->addElement('html', '<p class="error-notification-header">' . get_string('submit_error', 'local_cas_help_links') .'</p>');
+        $mform->addElement('html', '<div class="error-notification-header alert alert-error">' . get_string('submit_error', 'local_cas_help_links') .'</div>');
 
         $mform->addElement('header', 'personal_preferences', $pcourseheader);
         
@@ -73,7 +89,7 @@ class cas_form extends moodleform {
             $mform->setDefault($course['display_input_name'], $course['hide_link']);
             
             // url input
-            $mform->addElement('text', $course['link_input_name'], $course['course_fullname'], ['class' => 'url-input']);
+            $mform->addElement('text', $course['link_input_name'], $course['course_fullname'], $lattributes);
             $mform->disabledIf($course['link_input_name'], $course['display_input_name'], 'checked');
             $mform->setDefault($course['link_input_name'], $course['link_url']);
             $mform->setType($course['link_input_name'], PARAM_TEXT);
@@ -92,7 +108,7 @@ class cas_form extends moodleform {
             $mform->setDefault($category['display_input_name'], $category['hide_link']);
             
             // url input
-            $mform->addElement('text', $category['link_input_name'], $category['category_name']);
+            $mform->addElement('text', $category['link_input_name'], $category['category_name'], $lattributes);
             $mform->disabledIf($category['link_input_name'], $category['display_input_name'], 'checked');
             $mform->setDefault($category['link_input_name'], $category['link_url']);
             $mform->setType($category['link_input_name'], PARAM_TEXT);
@@ -105,7 +121,7 @@ class cas_form extends moodleform {
         $mform->setDefault($userSettingsData['display_input_name'], $userSettingsData['hide_link']);
         
         // url input
-        $mform->addElement('text', $userSettingsData['link_input_name'], $my_default_link);
+        $mform->addElement('text', $userSettingsData['link_input_name'], $my_default_link, $lattributes);
         $mform->disabledIf($userSettingsData['link_input_name'], $userSettingsData['display_input_name'], 'checked');
         $mform->setDefault($userSettingsData['link_input_name'], $userSettingsData['link_url']);
         $mform->setType($userSettingsData['link_input_name'], PARAM_TEXT);

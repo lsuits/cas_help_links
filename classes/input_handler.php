@@ -242,16 +242,18 @@ class local_cas_help_links_input_handler {
      */
     private static function format_url($url)
     {
+        $invalid_url = get_string('invalid_url', 'local_cas_help_links');
+        $url = filter_var($url, FILTER_SANITIZE_URL);
         if (substr($url, 0, 7) == 'http://' || substr($url, 0, 8) == 'https://') {
-            if (preg_match( '/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'((:[0-9]{1,5})?\\/.*)?$/i' ,$url)) {
+            if (filter_var($url, FILTER_VALIDATE_URL) && preg_match('/http[s]?:\/\/[^\.|^\,][-a-zA-Z0-9@:%._\+~#=]{0,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*/i' ,$url)) {
                 return $url;
             } else {
-                return false;
+                throw new Exception($invalid_url . $url);
             }
-        } else if (preg_match( '/^[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'((:[0-9]{1,5})?\\/.*)?$/i' ,$url)) {
+        } else if (filter_var('http://' . $url, FILTER_VALIDATE_URL) && preg_match('/http[s]?:\/\/[^\.|^\,][-a-zA-Z0-9@:%._\+~#=]{0,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*/i' ,'http://' . $url)) {
                 return 'http://' . $url;
             } else {
-                return false;
+                throw new Exception($invalid_url . $url);
         }
     }
 

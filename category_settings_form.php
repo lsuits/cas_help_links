@@ -37,9 +37,11 @@ class cas_cat_form extends moodleform {
         global $CFG, $DB, $OUTPUT;
         $mform = $this->_form;
         $attributes = array(
-        'class' => 'cas-display-toggle'
+            'class' => 'cas-display-toggle'
         );
-
+        $lattributes = array(
+            'class' => 'url-input'
+        );
         $catheader = get_string('category_header', 'local_cas_help_links');
         $hidecatlinks = get_string('hide_category_links', 'local_cas_help_links');
 
@@ -47,7 +49,7 @@ class cas_cat_form extends moodleform {
         $mform->addElement('hidden', 'sesskey', sesskey());
         $mform->setType('id', PARAM_INT);
         
-        $mform->addElement('html', '<p class="error-notification-header">' . get_string('submit_error', 'local_cas_help_links') .'</p>');
+        $mform->addElement('html', '<p class="error-notification-header alert alert-error">' . get_string('submit_error', 'local_cas_help_links') .'</p>');
         
         $mform->addElement('header', 'category_preferences', $catheader);
         
@@ -57,7 +59,7 @@ class cas_cat_form extends moodleform {
             $mform->setDefault($category['display_input_name'], $category['hide_link']);
             
             // url input
-            $mform->addElement('text', $category['link_input_name'], $category['category_name'], ['class' => 'url-input']);
+            $mform->addElement('text', $category['link_input_name'], $category['category_name'], $lattributes);
             $mform->disabledIf($category['link_input_name'], $category['display_input_name'], 'checked');
             $mform->setDefault($category['link_input_name'], $category['link_url']);
             $mform->setType($category['link_input_name'], PARAM_TEXT);

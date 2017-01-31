@@ -1,6 +1,4 @@
-.error-notification-header {
-  font-weight: bold;
-  color: red;
+.error-notification-header.alert.alert-error {
   display: none; }
 
 input.url-input.has-error {

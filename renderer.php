@@ -47,4 +47,5 @@ class local_cas_help_links_renderer extends plugin_renderer_base {
         $out = $mform->display();
         return $out;
     }
+
 }

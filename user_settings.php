@@ -50,19 +50,11 @@ if ($USER->id != $user_id) {
 $submit_success = false;
 
 if ($data = data_submitted() and confirm_sesskey()) {
-    
     try {
-        
         $submit_success = \local_cas_help_links_input_handler::handle_user_settings_input($data, $user_id);
-
-    } catch (Exception $e) {
-        
+    } catch (\Exception $e) {
         $submit_success = false;
-        
-        var_dump($e);die; // @TODO: make this really do something, validation? errors?
-
     }
-
 }
 
 //////////////////////////////////////////////////////////
@@ -85,15 +77,17 @@ $PAGE->set_context($context);
 $PAGE->requires->jquery();
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . "/local/cas_help_links/style.css"));
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . "/local/cas_help_links/module.js"));
-
 $PAGE->requires->js_init_call('M.local_cas_help_links.init_index');
 
 $output = $PAGE->get_renderer('local_cas_help_links');
 echo $output->header();
-
-if ($submit_success) {
+if (isset($e)) {
+    echo $OUTPUT->notification(get_string('submit_error', 'local_cas_help_links') . ' (' . $e->getMessage() . ')', 'notifyproblem');
+    /* A novel, if not sloppy hack to highlight input boxes
+    echo $OUTPUT->linktestfail = '';
+    */
+} else if ($submit_success) {
     echo $OUTPUT->notification(get_string('submit_success', 'local_cas_help_links'), 'notifysuccess');
 }
-
 echo $output->cas_help_links($courseSettingsData,$categorySettingsData,$userSettingsData);
 echo $output->footer();
