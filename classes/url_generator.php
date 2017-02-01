@@ -45,7 +45,7 @@ class local_cas_help_links_url_generator {
         if (\ues_user::is_teacher($user_id)) {
             // return edit link
             return self::getCourseEditHelpUrl();
-        } else if (has_capability('local/cas_help_links:editglobalsettings', context_system::instance())) {
+        } else if (has_capability('local/cas_help_links:editcategorysettings', context_system::instance())) {
             return self::getCategoryEditHelpUrl(); 
         } else {
             //  otherwise rdo not display

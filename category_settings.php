@@ -32,7 +32,7 @@ $PAGE->set_url($CFG->wwwroot . '/local/cas_help_links/user_settings.php');
 $PAGE->set_context($context);
 
 require_login();
-require_capability('local/cas_help_links:editglobalsettings', $context);
+require_capability('local/cas_help_links:editcategorysettings', $context);
 
 //////////////////////////////////////////////////////////
 /// 
