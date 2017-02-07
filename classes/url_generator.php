@@ -23,7 +23,7 @@ class local_cas_help_links_url_generator {
             return self::getEmptyHelpUrlArray();
         } else {
             //  otherwise return link pref data
-            return self::getDisplayHelpUrlArray($course_id, $category_id, $primary_instructor_user_id);
+            return self::getDisplayHelpUrlArray($course_id, $category_id, $primary_instructor_user_id, $course->fullname);
         }
     }
 
@@ -115,12 +115,13 @@ class local_cas_help_links_url_generator {
      * @param  int  $course_id
      * @param  int  $category_id
      * @param  int  $primary_instructor_user_id
+     * @param  string  $course_full_name
      * @return array
      */
-    private static function getDisplayHelpUrlArray($course_id, $category_id, $primary_instructor_user_id)
+    private static function getDisplayHelpUrlArray($course_id, $category_id, $primary_instructor_user_id, $course_full_name)
     {
         // get appropriate pref from db
-        if ( ! $selectedPref = \local_cas_help_links_utility::getSelectedPref($course_id, $category_id, $primary_instructor_user_id)) {
+        if ( ! $selectedPref = \local_cas_help_links_utility::getSelectedPref($course_id, $category_id, $primary_instructor_user_id, $course_full_name)) {
             // if no pref can be resolved, return default settings using system config
             $urlArray = self::getDefaultHelpUrlArray();
         } else {

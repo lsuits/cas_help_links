@@ -62,6 +62,20 @@ class local_cas_help_links_utility {
     }
 
     /**
+     * Returns an array of all existing "coursematch" settings data
+     * 
+     * @return array
+     */
+    public static function get_all_coursematch_settings()
+    {
+        global $DB;
+
+        $results = $DB->get_records('local_cas_help_links', ['type' => 'coursematch']);
+
+        return $results;
+    }
+
+    /**
      * Fetches the given primary's current course data
      * 
      * @param  int $user_id
@@ -436,14 +450,18 @@ class local_cas_help_links_utility {
      * @param  int  $course_id
      * @param  int  $category_id
      * @param  int  $primary_instructor_user_id
+     * @param  string  $course_full_name
      * @return mixed array|bool
      */
-    public static function getSelectedPref($course_id, $category_id, $primary_instructor_user_id)
+    public static function getSelectedPref($course_id, $category_id, $primary_instructor_user_id, $course_full_name)
     {
         // pull all of the preference data relative to the course, category, user
         $prefs = self::getRelatedPrefData($course_id, $category_id, $primary_instructor_user_id);
 
         $selectedPref = false;
+
+        $coursematch_dept = self::get_coursematch_dept_from_name($course_full_name);
+        $coursematch_number = self::get_coursematch_number_from_name($course_full_name);
 
         // first, keep only prefs with this primary associated
         if ($primaryUserPrefs = array_where($prefs, function ($key, $pref) use ($primary_instructor_user_id) {
@@ -497,6 +515,11 @@ class local_cas_help_links_utility {
                     });
                 }
             }
+        // otherwise, attempt to find a "coursematch"
+        } else if ($selectedPref = array_where($prefs, function ($key, $pref) use ($coursematch_dept, $coursematch_number) {
+                return $pref->type == 'coursematch' && $pref->dept == $coursematch_dept && $pref->number == $coursematch_number;
+            })) {
+
         // otherwise, keep only this category's prefs
         } else if ($categoryPrefs = array_where($prefs, function ($key, $pref) use ($category_id) {
                 return $pref->type == 'category' && $pref->category_id == $category_id && $pref->user_id == 0;
@@ -570,8 +593,8 @@ class local_cas_help_links_utility {
             return $carry;
         });
         
-        // remove the final "or" from the where clause
-        $whereClause = substr($whereClause, 0, -4);
+        // include all 'coursematch' prefs
+        $whereClause .= "(links.type = 'coursematch')";
 
         return $whereClause;
     }
@@ -596,6 +619,32 @@ class local_cas_help_links_utility {
     private static function get_course_end_time()
     {
         return time();
+    }
+
+    /**
+     * Returns a "department number" string given a moodle course full name
+     * 
+     * @param  string $course_fullname  ex: '2017 Spring MUS 1751 for teacher...'
+     * @return string
+     */
+    private static function get_coursematch_dept_from_name($course_fullname)
+    {
+        $exploded = explode(' ', $course_fullname);
+
+        return $exploded[2];
+    }
+    
+    /**
+     * Returns a "course number" string given a moodle course full name
+     * 
+     * @param  string $course_fullname  ex: '2017 Spring MUS 1751 for teacher...'
+     * @return string
+     */
+    private static function get_coursematch_number_from_name($course_fullname)
+    {
+        $exploded = explode(' ', $course_fullname);
+
+        return $exploded[3];
     }
 
 }
