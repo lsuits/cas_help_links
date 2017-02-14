@@ -20,7 +20,8 @@ class local_cas_help_links_button_renderer {
 
         $interstitial_url = new moodle_url('/local/cas_help_links/interstitial.php', [
             'u' => $help_url_array['url'],
-            'l' => $help_url_array['link_id'],
+            'c' => $help_url_array['course_id'],
+            'l' => $help_url_array['link_id']
         ]);
 
         return $help_url_array['display'] ? '<a class="' . $class . '" href="' . $interstitial_url . '" target="_blank">' . $help_url_array['label'] . '</a>' : '';

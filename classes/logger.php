@@ -9,12 +9,13 @@ class local_cas_help_links_logger {
      * @param  int  $link_id  'help links' table record id
      * @return boid
      */
-    public static function log_link_click($user_id, $link_id = 0)
+    public static function log_link_click($user_id, $course_id, $link_id = 0)
     {
         global $DB;
 
         $log_record = new stdClass;
         $log_record->user_id = $user_id;
+        $log_record->course_id = $course_id;
         $log_record->link_id = $link_id;
         $log_record->time_clicked = time();
 
