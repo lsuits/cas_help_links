@@ -25,6 +25,7 @@
 require_once('../../config.php');
 
 $redirect_url = required_param('u', PARAM_URL);
+$course_id = required_param('c', PARAM_INT);
 $link_id = required_param('l', PARAM_INT);
 
 $context = context_system::instance();
@@ -47,7 +48,7 @@ if ($redirect_url) {
     // verify link record?
 
     // loggen the linken here
-    \local_cas_help_links_logger::log_link_click($USER->id, $link_id);
+    \local_cas_help_links_logger::log_link_click($USER->id, $course_id, $link_id);
     
     // redirect to the appropriate url
     header('Location: ' . $redirect_url);

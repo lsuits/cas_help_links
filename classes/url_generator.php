@@ -123,7 +123,7 @@ class local_cas_help_links_url_generator {
         // get appropriate pref from db
         if ( ! $selectedPref = \local_cas_help_links_utility::getSelectedPref($course_id, $category_id, $primary_instructor_user_id, $course_full_name)) {
             // if no pref can be resolved, return default settings using system config
-            $urlArray = self::getDefaultHelpUrlArray();
+            $urlArray = self::getDefaultHelpUrlArray($course_id);
         } else {
             // otherwise, convert the selected pref result to a single object
             $selectedPref = reset($selectedPref); // @WATCH - should be no multiple results confusion here
@@ -132,7 +132,8 @@ class local_cas_help_links_url_generator {
                 'display' => $selectedPref->display,
                 'url' => $selectedPref->link,
                 'label' => get_string('help_button_label', 'local_cas_help_links'),
-                'link_id' => $selectedPref->id,
+                'course_id' => $course_id,
+                'link_id' => $selectedPref->id
             ];
         }
 
@@ -144,13 +145,14 @@ class local_cas_help_links_url_generator {
      * 
      * @return array
      */
-    private static function getDefaultHelpUrlArray()
+    private static function getDefaultHelpUrlArray($course_id)
     {
         return [
             'display' => \local_cas_help_links_utility::isPluginEnabled(),
             'url' => get_config('local_cas_help_links', 'default_help_link'),
             'label' => get_string('help_button_label', 'local_cas_help_links'),
-            'link_id' => ''
+            'course_id' => $course_id,
+            'link_id' => '0'
         ];
     }
 
@@ -165,6 +167,7 @@ class local_cas_help_links_url_generator {
             'display' => false,
             'url' => '',
             'label' => '',
+            'course_id' => 0,
             'link_id' => 0
         ];
     }

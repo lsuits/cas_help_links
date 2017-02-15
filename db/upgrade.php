@@ -58,13 +58,23 @@ function xmldb_local_cas_help_links_upgrade($oldversion) {
         $table = new xmldb_table('local_cas_help_links_log');
 
         if ( ! $dbman->table_exists($table)) {
-            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE);
-            $table->add_field('link_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL);
-            $table->add_field('user_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL);
-            $table->add_field('time_clicked', XMLDB_TYPE_INTEGER, '12', XMLDB_UNSIGNED, XMLDB_NOTNULL);
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+            $table->add_field('link_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+            $table->add_field('user_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+            $table->add_field('course_id', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+            $table->add_field('time_clicked', XMLDB_TYPE_INTEGER, '12', null, XMLDB_NOTNULL, null, null);
             $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id')); // @TODO - index here?
             
             $dbman->create_table($table);
+        }
+    }
+
+    if ($oldversion < 2017021400) {
+        $table = new xmldb_table('local_cas_help_links_log');
+
+        if ($dbman->table_exists($table)) {
+            $field = new xmldb_field('course_id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0');
+            $dbman->add_field($table, $field);
         }
     }
 
