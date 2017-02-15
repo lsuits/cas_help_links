@@ -12,6 +12,10 @@ class local_cas_help_links_db_seeder {
     
     public $urls;
 
+    public $courses;
+
+    public $courseCount;
+
     public $studentUsers;
 
     public $studentUserCount;
@@ -148,11 +152,14 @@ class local_cas_help_links_db_seeder {
                 // get a random user id
                 $userId = $this->getRandomUserId();
 
+                // get a random course id
+                $courseId = $this->getRandomCourseId();
+
                 // get a random link id
                 $linkId = $this->getRandomLinkId();
                 
                 // @TODO - randomize the specific time portion of timestamp
-                $this->insertLogRecord($userId, $linkId, $tickDate->getTimestamp());
+                $this->insertLogRecord($userId, $linkId, $courseId, $tickDate->getTimestamp());
             }
 
             // add an hour to the current timestamp
@@ -163,6 +170,25 @@ class local_cas_help_links_db_seeder {
         }
         
         return $success;
+    }
+
+    /**
+     * Returns a random course id,
+     * also sets available course list and count if not already set
+     * 
+     * @return int
+     */
+    private function getRandomCourseId()
+    {
+        if (is_null($this->courses)) {
+            // @TODO - make sure we're getting a real, active course
+            $this->courses = array_values(get_courses());
+            $this->courseCount = count($this->courses);
+        }
+
+        $course = $this->courses[mt_rand(0, $this->courseCount - 1)];
+
+        return (int) $course->id;
     }
 
     /**
@@ -228,14 +254,16 @@ class local_cas_help_links_db_seeder {
      * 
      * @param  int $userId
      * @param  int $linkId
+     * @param  int $courseId
      * @param  int $timestamp
      * @return int
      */
-    private function insertLogRecord($userId, $linkId, $timestamp)
+    private function insertLogRecord($userId, $linkId, $courseId, $timestamp)
     {
         $logRecord = new stdClass();
         $logRecord->user_id = $userId;
         $logRecord->link_id = $linkId;
+        $logRecord->course_id = $courseId;
         $logRecord->time_clicked = $timestamp;
 
         $id = $this->db->insert_record('local_cas_help_links_log', $logRecord);
