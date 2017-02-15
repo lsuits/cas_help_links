@@ -78,5 +78,33 @@ function xmldb_local_cas_help_links_upgrade($oldversion) {
         }
     }
 
+    if ($oldversion < 2017021500) {
+        $table = new xmldb_table('local_cas_help_links_log');
+
+        if ($dbman->table_exists($table)) {
+
+            // drop link_id from log table
+            $key = new xmldb_key('link_id_key', XMLDB_KEY_FOREIGN);
+            $dbman->drop_key($table, $key);
+            $field = new xmldb_field('link_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+            $dbman->drop_field($table, $field);
+
+            // drop course_id from log table
+            $key = new xmldb_key('course_id_key', XMLDB_KEY_FOREIGN);
+            $dbman->drop_key($table, $key);
+            $field = new xmldb_field('course_id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0');
+            $dbman->drop_field($table, $field);
+
+            $field = new xmldb_field('link_type', XMLDB_TYPE_CHAR, '11', null, XMLDB_NOTNULL, null);
+            $dbman->add_field($table, $field);
+            $field = new xmldb_field('link_url', XMLDB_TYPE_CHAR, '512', null, XMLDB_NOTNULL, null);
+            $dbman->add_field($table, $field);
+            $field = new xmldb_field('course_dept', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null);
+            $dbman->add_field($table, $field);
+            $field = new xmldb_field('course_number', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null);
+            $dbman->add_field($table, $field);
+        }
+    }
+
     return true;
 }
