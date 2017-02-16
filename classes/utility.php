@@ -446,6 +446,21 @@ class local_cas_help_links_utility {
     }
 
     /**
+     * Fetches a cas_help_link object
+     *
+     * @param  int $link_id
+     * @return object
+     */
+    public static function get_link($link_id)
+    {
+        global $DB;
+
+        $result = $DB->get_record('local_cas_help_links', ['id' => $link_id]);
+
+        return $result;
+    }
+
+    /**
      * Returns whether or not this plugin is enabled based off plugin config
      * 
      * @return boolean
@@ -494,6 +509,31 @@ class local_cas_help_links_utility {
 
         // be sure to return 0 if still no user id can be determined
         return ! is_null($userId) ? (int) $userId : 0;
+    }
+
+    /**
+     * Fetches select data from a UES course record given a moodle course id
+     * 
+     * @param  int $course_id
+     * @return array
+     */
+    public static function get_ues_course_data($course_id)
+    {
+        global $DB;
+
+        // @TODO: make cou_number variable
+        $result = $DB->get_record_sql('SELECT DISTINCT uesc.department, uesc.cou_number FROM {enrol_ues_courses} uesc
+            INNER JOIN {enrol_ues_sections} sec ON sec.courseid = uesc.id
+            INNER JOIN {enrol_ues_semesters} sem ON sem.id = sec.semesterid
+            INNER JOIN {course} c ON c.idnumber = sec.idnumber
+            WHERE sec.idnumber IS NOT NULL
+            AND sec.idnumber <> ""
+            AND uesc.cou_number < "5000"
+            AND sem.classes_start < ' . self::get_course_start_time() . ' 
+            AND sem.grades_due > ' . self::get_course_end_time() . ' 
+            AND c.id = ?', array($course_id));
+
+        return $result;
     }
 
     /**
