@@ -12,13 +12,13 @@ class local_cas_help_links_db_seeder {
     
     public $urls;
 
-    public $courses;
-
-    public $courseCount;
-
     public $studentUsers;
 
     public $studentUserCount;
+
+    public $uesCourses;
+
+    public $uesCourseCount;
 
     public $links;
 
@@ -31,6 +31,8 @@ class local_cas_help_links_db_seeder {
         $this->urls = include('../resources/sample_urls.php');
         $this->studentUsers = null;
         $this->studentUserCount = null;
+        $this->uesCourses = null;
+        $this->uesCourseCount = null;
         $this->links = null;
         $this->linkCount = null;
     }
@@ -152,14 +154,14 @@ class local_cas_help_links_db_seeder {
                 // get a random user id
                 $userId = $this->getRandomUserId();
 
-                // get a random course id
-                $courseId = $this->getRandomCourseId();
+                // get a random UES course
+                $uesCourse = $this->getRandomUesCourse();
 
-                // get a random link id
-                $linkId = $this->getRandomLinkId();
+                // get a random link
+                $link = $this->getRandomLink();
                 
                 // @TODO - randomize the specific time portion of timestamp
-                $this->insertLogRecord($userId, $linkId, $courseId, $tickDate->getTimestamp());
+                $this->insertLogRecord($userId, $link, $uesCourse, $tickDate->getTimestamp());
             }
 
             // add an hour to the current timestamp
@@ -173,22 +175,22 @@ class local_cas_help_links_db_seeder {
     }
 
     /**
-     * Returns a random course id,
+     * Returns a random UES course,
      * also sets available course list and count if not already set
      * 
-     * @return int
+     * @return object
      */
-    private function getRandomCourseId()
+    private function getRandomUesCourse()
     {
-        if (is_null($this->courses)) {
+        if (is_null($this->uesCourses)) {
             // @TODO - make sure we're getting a real, active course
-            $this->courses = array_values(get_courses());
-            $this->courseCount = count($this->courses);
+            $this->uesCourses = array_values($this->getUesCourses());
+            $this->uesCourseCount = count($this->uesCourses);
         }
 
-        $course = $this->courses[mt_rand(0, $this->courseCount - 1)];
+        $course = $this->uesCourses[mt_rand(0, $this->uesCourseCount - 1)];
 
-        return (int) $course->id;
+        return $course;
     }
 
     /**
@@ -210,12 +212,12 @@ class local_cas_help_links_db_seeder {
     }
 
     /**
-     * Returns a random cas help link id,
+     * Returns a random cas help link,
      * also sets available link list and count if not already set
      * 
-     * @return int
+     * @return object
      */
-    private function getRandomLinkId()
+    private function getRandomLink()
     {
         if (is_null($this->links)) {
             $this->links = array_values($this->getLinks());
@@ -224,7 +226,7 @@ class local_cas_help_links_db_seeder {
 
         $link = $this->links[mt_rand(0, $this->linkCount - 1)];
 
-        return (int) $link->id;
+        return $link;
     }
 
     /**
@@ -253,18 +255,20 @@ class local_cas_help_links_db_seeder {
      * Inserts a log record for the given parameters
      * 
      * @param  int $userId
-     * @param  int $linkId
-     * @param  int $courseId
+     * @param  object $link
+     * @param  object $uesCourse
      * @param  int $timestamp
      * @return int
      */
-    private function insertLogRecord($userId, $linkId, $courseId, $timestamp)
+    private function insertLogRecord($userId, $link, $uesCourse, $timestamp)
     {
         $logRecord = new stdClass();
         $logRecord->user_id = $userId;
-        $logRecord->link_id = $linkId;
-        $logRecord->course_id = $courseId;
         $logRecord->time_clicked = $timestamp;
+        $logRecord->link_type = $link->type;
+        $logRecord->link_url = $link->link;
+        $logRecord->course_dept = $uesCourse->department;
+        $logRecord->course_number = $uesCourse->cou_number;
 
         $id = $this->db->insert_record('local_cas_help_links_log', $logRecord);
 
@@ -316,6 +320,18 @@ class local_cas_help_links_db_seeder {
             WHERE sec.idnumber IS NOT NULL
             AND sec.idnumber <> ""
             AND s.status = "enrolled"');
+
+        return $result;
+    }
+
+    /**
+     * Returns an array of objects containing ues courses
+     * 
+     * @return array
+     */
+    private function getUesCourses()
+    {
+        $result = $this->db->get_records('enrol_ues_courses');
 
         return $result;
     }
