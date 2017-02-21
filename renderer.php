@@ -33,6 +33,14 @@ require_once($CFG->dirroot.'/local/cas_help_links/delete_coursematch_setting_for
 
 class local_cas_help_links_renderer extends plugin_renderer_base {
 
+    public function link_to_analytics() {
+        return $this->action_link('analytics.php', get_string('analytics_link_label', 'local_cas_help_links'));
+    }
+
+    public function link_to_category_settings() {
+        return $this->action_link('category_settings.php', get_string('category_settings_link_label', 'local_cas_help_links'));
+    }
+
     public function cas_help_links($courseSettingsData,$categorySettingsData,$userSettingsData) {
         global $USER;
         $mform = new cas_form(null, array('courseSettingsData' => $courseSettingsData,'categorySettingsData' => $categorySettingsData,'userSettingsData' => $userSettingsData));
@@ -59,6 +67,11 @@ class local_cas_help_links_renderer extends plugin_renderer_base {
 
         $out = $mform->display();
         return $out;
+    }
+
+    public function semester_usage_chart() {
+        // @TODO - use moodle stuff to do this...
+        return '<canvas id="chart" width="900" height="400"></canvas>';
     }
 
 }

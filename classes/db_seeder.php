@@ -28,7 +28,7 @@ class local_cas_help_links_db_seeder {
         global $DB;
 
         $this->db = $DB;
-        $this->urls = include('../resources/sample_urls.php');
+        $this->urls = include('../files/sample_urls.php');
         $this->studentUsers = null;
         $this->studentUserCount = null;
         $this->uesCourses = null;

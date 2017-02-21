@@ -75,69 +75,6 @@ class local_cas_help_links_utility {
         return $results;
     }
 
-
-    /**
-     * Fetches the usage for the system
-     *
-     * @return array
-     */
-    private static function get_usage_data()
-    {
-        global $DB;
-
-        $result = $DB->get_records_sql('SELECT Department, Course_Number, Full_Name_of_User, Link_Type, External_URL, Time_Clicked FROM (
-            SELECT
-                llog.id AS uniqer,
-                uec.department AS Department,
-                uec.cou_number AS Course_Number,
-                CONCAT(u.firstname, " ", u.lastname) AS Full_Name_of_User,
-                link.type AS Link_Type,
-                link.link AS External_URL,
-                FROM_UNIXTIME(llog.time_clicked) AS Time_Clicked
-            FROM {course} c
-                INNER JOIN {enrol_ues_sections} sec ON sec.idnumber = c.idnumber
-                INNER JOIN {enrol_ues_courses} uec ON uec.id = sec.courseid
-                INNER JOIN {local_cas_help_links_log} llog ON c.id = llog.course_id
-                INNER JOIN {user} u ON u.id = llog.user_id
-                INNER JOIN {local_cas_help_links} link ON link.id = llog.link_id
-            WHERE c.idnumber <> "" AND c.idnumber IS NOT NULL AND link.user_id = 0
-            UNION ALL
-            SELECT
-                llog.id AS uniqer,
-                uec.department AS Department,
-                uec.cou_number AS Course_Number,
-                CONCAT(u.firstname, " ", u.lastname) AS Full_Name_of_User,
-                "Site" AS Link_Type,
-                NULL AS External_URL,
-                FROM_UNIXTIME(llog.time_clicked) AS Time_Clicked
-            FROM {course} c
-                INNER JOIN {enrol_ues_sections} sec ON sec.idnumber = c.idnumber
-                INNER JOIN {enrol_ues_courses} uec ON uec.id = sec.courseid
-                INNER JOIN {local_cas_help_links_log} llog ON c.id = llog.course_id
-                INNER JOIN {user} u ON u.id = llog.user_id
-                LEFT JOIN {local_cas_help_links} link ON link.id = llog.link_id
-            WHERE c.idnumber <> "" AND c.idnumber IS NOT NULL AND link.id IS NULL
-            UNION ALL
-            SELECT
-               llog.id AS uniqer,
-               uec.department AS Department,
-               uec.cou_number AS Course_Number,
-               CONCAT(u.firstname, " ", u.lastname) AS Full_Name_of_User,
-               IF(link.user_id>0,"User Category", IFNULL(link.type, "Site")) AS Link_Type,
-               link.link AS External_URL,
-               FROM_UNIXTIME(llog.time_clicked) AS Time_Clicked
-            FROM {course} c
-                INNER JOIN {enrol_ues_sections} sec ON sec.idnumber = c.idnumber
-                INNER JOIN {enrol_ues_courses} uec ON uec.id = sec.courseid
-                INNER JOIN {local_cas_help_links_log} llog ON c.id = llog.course_id
-                INNER JOIN {user} u ON u.id = llog.user_id
-                INNER JOIN {local_cas_help_links} link ON link.id = llog.link_id
-            WHERE c.idnumber <> "" AND c.idnumber IS NOT NULL AND link.user_id > 0) t
-            GROUP BY uniqer
-        ');
-        return $result;
-    }
-
     /**
      * Fetches the given primary's current course data
      * 
@@ -216,15 +153,28 @@ class local_cas_help_links_utility {
     /**
      * Fetches category data
      * 
+     * @param  bool $forSelectList
      * @return array
      */
-    public static function get_category_data()
+    public static function get_category_data($forSelectList = false)
     {
         global $DB;
 
         $result = $DB->get_records_sql('SELECT DISTINCT id, name FROM {course_categories}');
 
-        return $result;
+        if ( ! $forSelectList)
+            return $result;
+
+        $output = [];
+
+        foreach ($result as $category) {
+            if ($category->id == 1)
+                continue;
+
+            $output[$category->name] = $category->name;
+        }
+
+        return $output;
     }
 
     /**
