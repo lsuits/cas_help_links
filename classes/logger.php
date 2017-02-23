@@ -179,7 +179,7 @@ class local_cas_help_links_logger {
     {
         global $DB;
         
-        $result = $DB->get_records_sql('SELECT * FROM {enrol_ues_semesters} WHERE classes_start < ? AND campus = "LSU" ORDER BY classes_start DESC', array(time()));
+        $result = $DB->get_records_sql('SELECT * FROM {enrol_ues_semesters} WHERE classes_start < ? AND campus = "LSU" AND session_key = "" ORDER BY classes_start DESC', array(time()));
 
         if ( ! empty($result)) {
             return reset($result);
