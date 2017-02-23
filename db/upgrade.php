@@ -25,23 +25,27 @@ function xmldb_local_cas_help_links_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2017022100) {
+    if ($oldversion < 2017022300) {
 
         $table = new xmldb_table('local_cas_help_links_log');
 
-        if ( ! $dbman->table_exists($table)) {
-            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-            $table->add_field('user_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
-            $table->add_field('time_clicked', XMLDB_TYPE_INTEGER, '12', null, XMLDB_NOTNULL, null, null);
-            $table->add_field('link_type', XMLDB_TYPE_CHAR, '11', null, XMLDB_NOTNULL, null, null);
-            $table->add_field('link_url', XMLDB_TYPE_CHAR, '512', null, XMLDB_NOTNULL, null, null);
-            $table->add_field('course_dept', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null);
-            $table->add_field('course_number', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null);
-
-            $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-            
-            $dbman->create_table($table);
+        // if an old log table exists, drop it
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
         }
+        
+        // create new log table
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('user_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $table->add_field('time_clicked', XMLDB_TYPE_INTEGER, '12', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('link_type', XMLDB_TYPE_CHAR, '11', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('link_url', XMLDB_TYPE_CHAR, '512', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('course_dept', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('course_number', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        
+        $dbman->create_table($table);
     }
 
     return true;
