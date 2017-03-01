@@ -47,9 +47,7 @@ list($weeks, $userTotals, $clickTotals) = \local_cas_help_links_logger::get_curr
 
 // PAGE RENDERING STUFF
 $PAGE->set_context($context);
-$PAGE->requires->jquery();
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . "/local/cas_help_links/style.css"));
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . "/local/cas_help_links/module.js"));
 
 $output = $PAGE->get_renderer('local_cas_help_links');
 
@@ -61,10 +59,10 @@ echo $output->single_select('analytics.php', 'dept', \local_cas_help_links_utili
 
 echo $output->semester_usage_chart();
 
-$PAGE->requires->js_call_amd('local_cas_help_links/semesterUsageChart', 'initialise', [
+$PAGE->requires->js_call_amd('local_cas_help_links/semesterUsageChart', 'initialise', array(
     $weeks, 
     $userTotals,
     $clickTotals,
-]);
+));
 
 echo $output->footer();

@@ -24,7 +24,6 @@
  */
 
 defined('MOODLE_INTERNAL') || die;
-//require_once $CFG->libdir.'/tablelib.php';
 require_once $CFG->libdir.'/outputcomponents.php';
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/cas_help_links/user_settings_form.php');
