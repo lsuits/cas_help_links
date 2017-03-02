@@ -46,14 +46,13 @@ require_capability('local/cas_help_links:editcategorysettings', $context);
 list($weeks, $userTotals, $clickTotals) = \local_cas_help_links_logger::get_current_semester_usage_data($selected_dept);
 
 // PAGE RENDERING STUFF
-$PAGE->set_context($context);
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . "/local/cas_help_links/style.css"));
 
 $output = $PAGE->get_renderer('local_cas_help_links');
 
 echo $output->header();
-echo $output->heading(get_string('analytics_heading', 'local_cas_help_links'));
 echo $output->action_link('category_settings.php', get_string('category_settings_link_label', 'local_cas_help_links'));
+echo $output->heading(get_string('analytics_heading', 'local_cas_help_links'), '2', array('class'=>'casstattitle'));
 
 echo $output->single_select('analytics.php', 'dept', \local_cas_help_links_utility::get_category_data(true), $selected_dept, ['' => 'All departments'], 'dept-select', []);
 
