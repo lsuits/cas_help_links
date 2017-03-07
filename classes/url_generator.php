@@ -133,7 +133,8 @@ class local_cas_help_links_url_generator {
                 'url' => $selectedPref->link,
                 'label' => get_string('help_button_label', 'local_cas_help_links'),
                 'course_id' => $course_id,
-                'link_id' => $selectedPref->id
+                'link_id' => $selectedPref->id,
+                'is_default_display' => (bool) ! $selectedPref->user_id
             ];
         }
 
@@ -152,7 +153,8 @@ class local_cas_help_links_url_generator {
             'url' => get_config('local_cas_help_links', 'default_help_link'),
             'label' => get_string('help_button_label', 'local_cas_help_links'),
             'course_id' => $course_id,
-            'link_id' => '0'
+            'link_id' => '0',
+            'is_default_display' => true
         ];
     }
 
@@ -168,7 +170,8 @@ class local_cas_help_links_url_generator {
             'url' => '',
             'label' => '',
             'course_id' => 0,
-            'link_id' => 0
+            'link_id' => 0,
+            'is_default_display' => true
         ];
     }
 }
