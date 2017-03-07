@@ -43,6 +43,7 @@ $string['hide_course_link'] = 'Hide course link: ';
 $string['pcategory_header'] = 'Category Personal Preferences';
 $string['category_header'] = 'Category Defaults';
 $string['course_match_header'] = 'Course Match Defaults';
+$string['hide_coursematch_links'] = 'Hide links for this course';
 $string['hide_category_links'] = 'Hide {$a} links: ';
 $string['user_header'] = 'User Personal Preferences';
 $string['hide_user_links'] = 'Hide all my links: ';

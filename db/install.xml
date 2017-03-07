@@ -13,6 +13,8 @@
         <FIELD NAME="user_id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
         <FIELD NAME="display" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="1"/>
         <FIELD NAME="link" TYPE="char" LENGTH="512" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="dept" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT=""/>
+        <FIELD NAME="number" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT=""/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

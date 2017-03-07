@@ -57,5 +57,21 @@ function xmldb_local_cas_help_links_upgrade($oldversion) {
         $dbman->add_field($table, $field);
     }
 
+    if ($oldversion < 2017030705) {
+        $table = new xmldb_table('local_cas_help_links');
+        $field = new xmldb_field('dept', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, '');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field, $continue=true, $feedback=true);
+        }
+        $field = new xmldb_field('number', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, '');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field, $continue=true, $feedback=true);
+        }
+        $field = new xmldb_field('type', XMLDB_TYPE_CHAR, '11', null, XMLDB_NOTNULL, null, NULL);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_precision($table, $field, $continue=true, $feedback=true);
+        }
+    }
+
     return true;
 }
