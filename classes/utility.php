@@ -76,6 +76,26 @@ class local_cas_help_links_utility {
     }
 
     /**
+     * Returns an array of the given teacher user's course ids and shortnames
+     * 
+     * @param  int $user_id
+     * @param  bool $idsOnly
+     * @return array
+     */
+    public static function get_teacher_course_selection_array($user_id, $idsOnly = false)
+    {
+        $courseData = self::get_primary_instructor_course_data($user_id);
+
+        $output = [];
+
+        foreach ($courseData as $course_id => $course) {
+            $output[$course_id] = $course->shortname;
+        }
+
+        return ! $idsOnly ? $output : array_keys($output);
+    }
+
+    /**
      * Fetches the given primary's current course data
      * 
      * @param  int $user_id
@@ -472,7 +492,7 @@ class local_cas_help_links_utility {
         global $DB;
 
         // @TODO: make cou_number variable
-        $result = $DB->get_record_sql('SELECT DISTINCT uesc.department, uesc.cou_number FROM {enrol_ues_courses} uesc
+        $result = $DB->get_record_sql('SELECT DISTINCT uesc.department, uesc.cou_number, c.id FROM {enrol_ues_courses} uesc
             INNER JOIN {enrol_ues_sections} sec ON sec.courseid = uesc.id
             INNER JOIN {enrol_ues_semesters} sem ON sem.id = sec.semesterid
             INNER JOIN {course} c ON c.idnumber = sec.idnumber

@@ -91,7 +91,7 @@ if (isset($e)) {
 }
 
 echo $output->heading(get_string('category_settings_heading', 'local_cas_help_links'));
-echo $output->action_link('analytics.php', get_string('analytics_link_label', 'local_cas_help_links'));
+echo $output->action_link('category_analytics.php', get_string('analytics_link_label', 'local_cas_help_links'));
 
 echo $output->cas_category_links($categorySettingsData);
 

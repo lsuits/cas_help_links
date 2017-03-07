@@ -33,7 +33,7 @@ require_once($CFG->dirroot.'/local/cas_help_links/delete_coursematch_setting_for
 class local_cas_help_links_renderer extends plugin_renderer_base {
 
     public function link_to_analytics() {
-        return $this->action_link('analytics.php', get_string('analytics_link_label', 'local_cas_help_links'));
+        return $this->action_link('category_analytics.php', get_string('analytics_link_label', 'local_cas_help_links'));
     }
 
     public function link_to_category_settings() {
@@ -69,8 +69,8 @@ class local_cas_help_links_renderer extends plugin_renderer_base {
     }
 
     public function semester_usage_chart() {
-        // @TODO - use moodle stuff to do this...
-        return '<canvas id="chart" width="900" height="400"></canvas>';
+        $out = html_writer::tag('canvas', null, array('id'=>'chart'));
+        return $out;
     }
 
 }

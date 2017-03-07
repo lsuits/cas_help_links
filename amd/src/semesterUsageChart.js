@@ -22,7 +22,10 @@ define(['local_cas_help_links/Chart'], function(c) {
                     ]
                 },
                 options: {
-                    responsive: false
+                    legend:{display: true,labels:{fontSize:15}},
+                    scales:{xAxes:[{ticks:{fontSize:15}}],yAxes:[{ticks:{fontSize:15}}]},
+                    responsive: true,
+                    maintainAspectRatio: true,
                 }
             });
         }
