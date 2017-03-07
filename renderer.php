@@ -69,8 +69,8 @@ class local_cas_help_links_renderer extends plugin_renderer_base {
     }
 
     public function semester_usage_chart() {
-        // @TODO - use moodle stuff to do this...
-        return '<canvas id="chart" width="900" height="400"></canvas>';
+        $out = html_writer::tag('canvas', null, array('id'=>'chart'));
+        return $out;
     }
 
 }
