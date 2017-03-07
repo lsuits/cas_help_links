@@ -43,7 +43,7 @@ require_capability('local/cas_help_links:editcategorysettings', $context);
 //////////////////////////////////////////////////////////
 
 // get all data
-list($weeks, $userTotals, $clickTotals) = \local_cas_help_links_logger::get_current_semester_usage_data($selected_dept);
+list($weeks, $userTotals, $clickTotals) = \local_cas_help_links_logger::get_all_current_semester_usage_data($selected_dept);
 
 // PAGE RENDERING STUFF
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . "/local/cas_help_links/style.css"));

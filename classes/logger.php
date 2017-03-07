@@ -37,17 +37,20 @@ class local_cas_help_links_logger {
             if (empty($uesCourseData)) {
                 $courseDept = '';
                 $courseNumber = '';
+                $courseId = 0;
             
             // otherwise, log the appropriate info
             } else {
                 $courseDept = $uesCourseData->department;
                 $courseNumber = $uesCourseData->cou_number;
+                $courseId = $uesCourseData->id;
             }
 
         // otherwise, something has gone wrong
         } else {
             $courseDept = '';
             $courseNumber = '';
+            $courseId = 0;
         }
 
         global $DB;
@@ -59,6 +62,7 @@ class local_cas_help_links_logger {
         $log_record->link_url = $linkUrl;
         $log_record->course_dept = $courseDept;
         $log_record->course_number = $courseNumber;
+        $log_record->course_id = $courseId;
 
         $DB->insert_record(self::get_log_table_name(), $log_record);
     }
@@ -81,7 +85,7 @@ class local_cas_help_links_logger {
      * @param  string $selectedDept
      * @return array
      */
-    public static function get_current_semester_usage_data($selectedDept = '')
+    public static function get_all_current_semester_usage_data($selectedDept = '')
     {
         $weeks = [];
         $userTotals = [];
@@ -116,6 +120,67 @@ class local_cas_help_links_logger {
         $select = $totalType == 'users' ? 'COUNT(DISTINCT user_id)' : 'COUNT(id)';
 
         $filter = $filterDept ? ' AND course_dept="' . $filterDept . '"' : '';
+
+        $result = $DB->get_records_sql('SELECT ' . $select . ' as total FROM {local_cas_help_links_log} WHERE time_clicked >= ? AND time_clicked <= ?' . $filter, array($startTime, $endTime));
+
+        if (property_exists(reset($result), 'total'))
+            return reset($result)->total;
+
+        return 0;
+    }
+
+    /**
+     * Returns current semester usage data scoped to a specific teacher user which includes: a list of weeks (x-axis), a list of respective unique user and total clicks
+     *
+     * Optionally, filters by a given course id
+     * 
+     * @param  int $userId
+     * @param  int $courseId
+     * @return array
+     */
+    public static function get_teacher_current_semester_usage_data($userId, $courseId = 0)
+    {
+        $weeks = [];
+        $userTotals = [];
+        $clickTotals = [];
+
+        foreach (self::get_current_semester_week_list() as $week) {
+            $weeks[] = $week['date'];
+            $userTotals[] = self::get_usage_totals_for_user_range('users', $week['starttime'], $week['endtime'], $userId, $courseId);
+            $clickTotals[] = self::get_usage_totals_for_user_range('clicks', $week['starttime'], $week['endtime'], $userId, $courseId);
+        }
+
+        return [
+            $weeks, 
+            $userTotals,
+            $clickTotals
+        ];
+    }
+
+    /**
+     * Returns a total amount of clicks of a given type (unique "users", or "clicks") for a given range and dept, scoped to a specific user's classes
+     * 
+     * @param  string $totalType  users|clicks(default)
+     * @param  int $startTime  unix timestamp
+     * @param  int $endTime  unix timestamp
+     * @param  int $userId
+     * @param  int $courseId
+     * @return int
+     */
+    private static function get_usage_totals_for_user_range($totalType, $startTime, $endTime, $userId, $courseId = 0)
+    {
+        global $DB;
+
+        $select = $totalType == 'users' ? 'COUNT(DISTINCT user_id)' : 'COUNT(id)';
+
+        // get this teacher user's current course ids
+        $courseIds = \local_cas_help_links_utility::get_teacher_course_selection_array($userId, true);
+
+        // transform for sql
+        $courseIdList = implode(',', $courseIds);
+
+        // if we're filtering by a single course, make it so, if not, pull all of this teacher's courses
+        $filter = $courseId ? ' AND course_id=' . $courseId : ' AND course_id IN (' . $courseIdList . ')';
 
         $result = $DB->get_records_sql('SELECT ' . $select . ' as total FROM {local_cas_help_links_log} WHERE time_clicked >= ? AND time_clicked <= ?' . $filter, array($startTime, $endTime));
 

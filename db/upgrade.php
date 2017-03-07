@@ -48,5 +48,14 @@ function xmldb_local_cas_help_links_upgrade($oldversion) {
         $dbman->create_table($table);
     }
 
+    if ($oldversion < 2017030701) {
+
+        $table = new xmldb_table('local_cas_help_links_log');
+
+        $field = new xmldb_field('course_id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0');
+        
+        $dbman->add_field($table, $field);
+    }
+
     return true;
 }
