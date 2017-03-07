@@ -60,3 +60,6 @@ $string['category_settings_link_label'] = 'Back to Edit category settings';
 
 $string['analytics_heading'] = 'CAS Help Links Usage';
 $string['analytics_link_label'] = 'View usage';
+
+$string['user_settings_heading'] = 'User Settings';
+$string['user_settings_link_label'] = 'Back to Edit user settings';
