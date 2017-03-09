@@ -419,7 +419,7 @@ class local_cas_help_links_input_handler {
     {
         $coursematch_object = new stdClass();
         $coursematch_object->type = 'coursematch';
-        $coursematch_object->display = $input['field'] == 'display' ? $input['input_value'] : '';
+        $coursematch_object->display = $input['field'] == 'display' ? '0' : '1';
         $coursematch_object->dept = $input['field'] == 'dept' ? strtoupper($input['input_value']) : '';
         $coursematch_object->number = $input['field'] == 'number' ? $input['input_value'] : '';
         $coursematch_object->link = $input['field'] == 'link' ? $input['input_value'] : '';

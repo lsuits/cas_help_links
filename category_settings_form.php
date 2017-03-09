@@ -72,8 +72,7 @@ class cas_cat_form extends moodleform {
 
         $hidecoursematchlinks = get_string('hide_coursematch_links', 'local_cas_help_links', NULL);
 
-        $mform->addElement('advcheckbox', 'coursematch_display', $hidecoursematchlinks, null, $attributes, array(0, 1));
-        $mform->setDefault('coursematch_display', 0);
+        $mform->addElement('checkbox', 'coursematch_display', $hidecoursematchlinks);
 
         $mform->addElement('text', 'coursematch_dept', get_string('coursematch_dept', 'local_cas_help_links'), []);
         $mform->setDefault('coursematch_dept', '');
