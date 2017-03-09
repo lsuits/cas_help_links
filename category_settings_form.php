@@ -44,6 +44,7 @@ class cas_cat_form extends moodleform {
         );
         $catheader = get_string('category_header', 'local_cas_help_links');
         $coursematchheader = get_string('course_match_header', 'local_cas_help_links');
+        $linkUrl = get_config('local_cas_help_links', 'default_help_link');
 
         $categories = $this->_customdata['categorySettingsData'];
         $mform->addElement('hidden', 'sesskey', sesskey());
@@ -76,15 +77,15 @@ class cas_cat_form extends moodleform {
         $mform->addElement('checkbox', 'coursematch_display', $hidecoursematchlinks);
 
         $mform->addElement('text', 'coursematch_dept', get_string('coursematch_dept', 'local_cas_help_links'), []);
-        $mform->setDefault('coursematch_dept', '');
+        $mform->setDefault('coursematch_dept', 'MISC');
         $mform->setType('coursematch_dept', PARAM_TEXT);
         
         $mform->addElement('text', 'coursematch_number', get_string('coursematch_number', 'local_cas_help_links'), []);
-        $mform->setDefault('coursematch_number', '');
+        $mform->setDefault('coursematch_number', '1000');
         $mform->setType('coursematch_number', PARAM_TEXT);
 
         $mform->addElement('text', 'coursematch_link', get_string('coursematch_link', 'local_cas_help_links'), $lattributes);
-        $mform->setDefault('coursematch_link', '');
+        $mform->setDefault('coursematch_link', $linkUrl);
         $mform->setType('coursematch_link', PARAM_TEXT);
 
         $this->add_action_buttons();
