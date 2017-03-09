@@ -55,17 +55,18 @@ class cas_cat_form extends moodleform {
         
         foreach ($categories as $category) {
             
+            // "hide" checkbox
+            $hidecatlinks = get_string('hide_category_links', 'local_cas_help_links', $category['category_name']);
+
+            $mform->addElement('advcheckbox', $category['display_input_name'], $hidecatlinks, null, $attributes, array(0, 1));
+            $mform->setDefault($category['display_input_name'], $category['hide_link']);
+
             // url input
             $mform->addElement('text', $category['link_input_name'], $category['category_name'], $lattributes);
             $mform->disabledIf($category['link_input_name'], $category['display_input_name'], 'checked');
             $mform->setDefault($category['link_input_name'], $category['link_url']);
             $mform->setType($category['link_input_name'], PARAM_TEXT);
             
-            // "hide" checkbox
-            $hidecatlinks = get_string('hide_category_links', 'local_cas_help_links', $category['category_name']);
-
-            $mform->addElement('advcheckbox', $category['display_input_name'], $hidecatlinks, null, $attributes, array(0, 1));
-            $mform->setDefault($category['display_input_name'], $category['hide_link']);
         }
         
         $mform->addElement('header', 'course_match_preferences', $coursematchheader);
