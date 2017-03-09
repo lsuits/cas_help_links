@@ -48,30 +48,30 @@ function xmldb_local_cas_help_links_upgrade($oldversion) {
         $dbman->create_table($table);
     }
 
-    if ($oldversion < 2017030701) {
+    // if ($oldversion < 2017030701) {
 
-        $table = new xmldb_table('local_cas_help_links_log');
+    //     $table = new xmldb_table('local_cas_help_links_log');
 
-        $field = new xmldb_field('course_id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0');
+    //     $field = new xmldb_field('course_id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0');
         
-        $dbman->add_field($table, $field);
-    }
+    //     $dbman->add_field($table, $field);
+    // }
 
-    if ($oldversion < 2017030705) {
-        $table = new xmldb_table('local_cas_help_links');
-        $field = new xmldb_field('dept', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, '');
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field, $continue=true, $feedback=true);
-        }
-        $field = new xmldb_field('number', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, '');
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field, $continue=true, $feedback=true);
-        }
-        $field = new xmldb_field('type', XMLDB_TYPE_CHAR, '11', null, XMLDB_NOTNULL, null, NULL);
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_precision($table, $field, $continue=true, $feedback=true);
-        }
-    }
+    // if ($oldversion < 2017030705) {
+    //     $table = new xmldb_table('local_cas_help_links');
+    //     $field = new xmldb_field('dept', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, '');
+    //     if (!$dbman->field_exists($table, $field)) {
+    //         $dbman->add_field($table, $field, $continue=true, $feedback=true);
+    //     }
+    //     $field = new xmldb_field('number', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, '');
+    //     if (!$dbman->field_exists($table, $field)) {
+    //         $dbman->add_field($table, $field, $continue=true, $feedback=true);
+    //     }
+    //     $field = new xmldb_field('type', XMLDB_TYPE_CHAR, '11', null, XMLDB_NOTNULL, null, NULL);
+    //     if ($dbman->field_exists($table, $field)) {
+    //         $dbman->change_field_precision($table, $field, $continue=true, $feedback=true);
+    //     }
+    // }
 
     return true;
 }
