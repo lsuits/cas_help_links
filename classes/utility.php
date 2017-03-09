@@ -523,18 +523,17 @@ class local_cas_help_links_utility {
      * @param  int  $course_id
      * @param  int  $category_id
      * @param  int  $primary_instructor_user_id
-     * @param  string  $course_full_name
      * @return mixed array|bool
      */
-    public static function getSelectedPref($course_id, $category_id, $primary_instructor_user_id, $course_full_name)
+    public static function getSelectedPref($course_id, $category_id, $primary_instructor_user_id)
     {
         // pull all of the preference data relative to the course, category, user
         $prefs = self::getRelatedPrefData($course_id, $category_id, $primary_instructor_user_id);
 
         $selectedPref = false;
 
-        $coursematch_dept = self::get_coursematch_dept_from_name($course_full_name);
-        $coursematch_number = self::get_coursematch_number_from_name($course_full_name);
+        $coursematch_dept = self::get_coursematch_dept_from_name($course_id);
+        $coursematch_number = self::get_coursematch_number_from_name($course_id);
 
         // first, keep only prefs with this primary associated
         if ($primaryUserPrefs = array_where($prefs, function ($key, $pref) use ($primary_instructor_user_id) {
@@ -695,29 +694,39 @@ class local_cas_help_links_utility {
     }
 
     /**
-     * Returns a "department number" string given a moodle course full name
+     * Returns a "department number" string given a moodle course id
      * 
-     * @param  string $course_fullname  ex: '2017 Spring MUS 1751 for teacher...'
+     * @param  int $course_id
      * @return string
      */
-    private static function get_coursematch_dept_from_name($course_fullname)
+    private static function get_coursematch_dept_from_name($course_id)
     {
-        $exploded = explode(' ', $course_fullname);
-
-        return $exploded[2];
+        global $DB;
+        $result = $DB->get_record_sql('SELECT DISTINCT cou.department AS dept FROM {enrol_ues_sections} sec
+            INNER JOIN {enrol_ues_courses} cou ON cou.id = sec.courseid
+            INNER JOIN {course} c ON c.idnumber = sec.idnumber
+            WHERE sec.idnumber IS NOT NULL
+            AND sec.idnumber <> ""
+            AND c.id = ?', array($course_id));
+        return $result->dept;
     }
     
     /**
-     * Returns a "course number" string given a moodle course full name
+     * Returns a "department number" string given a moodle course id
      * 
-     * @param  string $course_fullname  ex: '2017 Spring MUS 1751 for teacher...'
+     * @param  int $course_id
      * @return string
      */
-    private static function get_coursematch_number_from_name($course_fullname)
+    private static function get_coursematch_number_from_name($course_id)
     {
-        $exploded = explode(' ', $course_fullname);
-
-        return $exploded[3];
+        global $DB;
+        $result = $DB->get_record_sql('SELECT DISTINCT cou.cou_number AS number FROM {enrol_ues_sections} sec
+            INNER JOIN {enrol_ues_courses} cou ON cou.id = sec.courseid
+            INNER JOIN {course} c ON c.idnumber = sec.idnumber
+            WHERE sec.idnumber IS NOT NULL
+            AND sec.idnumber <> ""
+            AND c.id = ?', array($course_id));
+        return $result->number;
     }
 
 }
