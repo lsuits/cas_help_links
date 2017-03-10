@@ -62,6 +62,40 @@ class local_cas_help_links_utility {
     }
 
     /**
+     * Returns an array of all existing "coursematch" settings data
+     * 
+     * @return array
+     */
+    public static function get_all_coursematch_settings()
+    {
+        global $DB;
+
+        $results = $DB->get_records('local_cas_help_links', ['type' => 'coursematch']);
+
+        return $results;
+    }
+
+    /**
+     * Returns an array of the given teacher user's course ids and shortnames
+     * 
+     * @param  int $user_id
+     * @param  bool $idsOnly
+     * @return array
+     */
+    public static function get_teacher_course_selection_array($user_id, $idsOnly = false)
+    {
+        $courseData = self::get_primary_instructor_course_data($user_id);
+
+        $output = [];
+
+        foreach ($courseData as $course_id => $course) {
+            $output[$course_id] = $course->shortname;
+        }
+
+        return ! $idsOnly ? $output : array_keys($output);
+    }
+
+    /**
      * Fetches the given primary's current course data
      * 
      * @param  int $user_id
@@ -139,15 +173,28 @@ class local_cas_help_links_utility {
     /**
      * Fetches category data
      * 
+     * @param  bool $forSelectList
      * @return array
      */
-    public static function get_category_data()
+    public static function get_category_data($forSelectList = false)
     {
         global $DB;
 
         $result = $DB->get_records_sql('SELECT DISTINCT id, name FROM {course_categories}');
 
-        return $result;
+        if ( ! $forSelectList)
+            return $result;
+
+        $output = [];
+
+        foreach ($result as $category) {
+            if ($category->id == 1)
+                continue;
+
+            $output[$category->name] = $category->name;
+        }
+
+        return $output;
     }
 
     /**
@@ -369,6 +416,21 @@ class local_cas_help_links_utility {
     }
 
     /**
+     * Fetches a cas_help_link object
+     *
+     * @param  int $link_id
+     * @return object
+     */
+    public static function get_link($link_id)
+    {
+        global $DB;
+
+        $result = $DB->get_record('local_cas_help_links', ['id' => $link_id]);
+
+        return $result;
+    }
+
+    /**
      * Returns whether or not this plugin is enabled based off plugin config
      * 
      * @return boolean
@@ -420,6 +482,31 @@ class local_cas_help_links_utility {
     }
 
     /**
+     * Fetches select data from a UES course record given a moodle course id
+     * 
+     * @param  int $course_id
+     * @return array
+     */
+    public static function get_ues_course_data($course_id)
+    {
+        global $DB;
+
+        // @TODO: make cou_number variable
+        $result = $DB->get_record_sql('SELECT DISTINCT uesc.department, uesc.cou_number, c.id FROM {enrol_ues_courses} uesc
+            INNER JOIN {enrol_ues_sections} sec ON sec.courseid = uesc.id
+            INNER JOIN {enrol_ues_semesters} sem ON sem.id = sec.semesterid
+            INNER JOIN {course} c ON c.idnumber = sec.idnumber
+            WHERE sec.idnumber IS NOT NULL
+            AND sec.idnumber <> ""
+            AND uesc.cou_number < "5000"
+            AND sem.classes_start < ' . self::get_course_start_time() . ' 
+            AND sem.grades_due > ' . self::get_course_end_time() . ' 
+            AND c.id = ?', array($course_id));
+
+        return $result;
+    }
+
+    /**
      * Returns the currently authenticated user id
      * 
      * @return int
@@ -444,6 +531,9 @@ class local_cas_help_links_utility {
         $prefs = self::getRelatedPrefData($course_id, $category_id, $primary_instructor_user_id);
 
         $selectedPref = false;
+
+        $coursematch_dept = self::get_coursematch_dept_from_name($course_id);
+        $coursematch_number = self::get_coursematch_number_from_name($course_id);
 
         // first, keep only prefs with this primary associated
         if ($primaryUserPrefs = array_where($prefs, function ($key, $pref) use ($primary_instructor_user_id) {
@@ -497,6 +587,11 @@ class local_cas_help_links_utility {
                     });
                 }
             }
+        // otherwise, attempt to find a "coursematch"
+        } else if ($selectedPref = array_where($prefs, function ($key, $pref) use ($coursematch_dept, $coursematch_number) {
+                return $pref->type == 'coursematch' && $pref->dept == $coursematch_dept && $pref->number == $coursematch_number;
+            })) {
+
         // otherwise, keep only this category's prefs
         } else if ($categoryPrefs = array_where($prefs, function ($key, $pref) use ($category_id) {
                 return $pref->type == 'category' && $pref->category_id == $category_id && $pref->user_id == 0;
@@ -570,8 +665,8 @@ class local_cas_help_links_utility {
             return $carry;
         });
         
-        // remove the final "or" from the where clause
-        $whereClause = substr($whereClause, 0, -4);
+        // include all 'coursematch' prefs
+        $whereClause .= "(links.type = 'coursematch')";
 
         return $whereClause;
     }
@@ -596,6 +691,42 @@ class local_cas_help_links_utility {
     private static function get_course_end_time()
     {
         return time();
+    }
+
+    /**
+     * Returns a "department number" string given a moodle course id
+     * 
+     * @param  int $course_id
+     * @return string
+     */
+    private static function get_coursematch_dept_from_name($course_id)
+    {
+        global $DB;
+        $result = $DB->get_record_sql('SELECT DISTINCT cou.department AS dept FROM {enrol_ues_sections} sec
+            INNER JOIN {enrol_ues_courses} cou ON cou.id = sec.courseid
+            INNER JOIN {course} c ON c.idnumber = sec.idnumber
+            WHERE sec.idnumber IS NOT NULL
+            AND sec.idnumber <> ""
+            AND c.id = ?', array($course_id));
+        return $result->dept;
+    }
+    
+    /**
+     * Returns a "department number" string given a moodle course id
+     * 
+     * @param  int $course_id
+     * @return string
+     */
+    private static function get_coursematch_number_from_name($course_id)
+    {
+        global $DB;
+        $result = $DB->get_record_sql('SELECT DISTINCT cou.cou_number AS number FROM {enrol_ues_sections} sec
+            INNER JOIN {enrol_ues_courses} cou ON cou.id = sec.courseid
+            INNER JOIN {course} c ON c.idnumber = sec.idnumber
+            WHERE sec.idnumber IS NOT NULL
+            AND sec.idnumber <> ""
+            AND c.id = ?', array($course_id));
+        return $result->number;
     }
 
 }

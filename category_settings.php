@@ -26,9 +26,9 @@ require_once('../../config.php');
 
 $context = context_system::instance();
 
-global $PAGE, $USER, $CFG;
+global $PAGE, $CFG;
 
-$PAGE->set_url($CFG->wwwroot . '/local/cas_help_links/user_settings.php');
+$PAGE->set_url($CFG->wwwroot . '/local/cas_help_links/category_settings.php');
 $PAGE->set_context($context);
 
 require_login();
@@ -42,8 +42,18 @@ require_capability('local/cas_help_links:editcategorysettings', $context);
 $submit_success = false;
 
 if ($data = data_submitted() and confirm_sesskey()) {
+    
     try {
-        $submit_success = \local_cas_help_links_input_handler::handle_category_settings_input($data);
+        // if category settings page was submitted
+        if (property_exists($data, '_qf__cas_cat_form')) {
+            $submit_success = \local_cas_help_links_input_handler::handle_category_settings_input($data);
+        }
+
+        // if coursematch delete form was submitted
+        else if (property_exists($data, '_qf__cas_delete_coursematch_form')) {
+            $submit_success = \local_cas_help_links_input_handler::handle_coursematch_deletion_input($data);
+        }
+
     } catch (\Exception $e) {
         $submit_success = false;
     }
@@ -59,6 +69,8 @@ if ($data = data_submitted() and confirm_sesskey()) {
 
 // get all data
 $categorySettingsData = \local_cas_help_links_utility::get_all_category_settings();
+
+$coursematchSettingsData = \local_cas_help_links_utility::get_all_coursematch_settings();
 
 // PAGE RENDERING STUFF
 $PAGE->set_context($context);
@@ -77,5 +89,14 @@ if (isset($e)) {
 } else if ($submit_success) {
     echo $OUTPUT->notification(get_string('submit_success', 'local_cas_help_links'), 'notifysuccess');
 }
+
+echo $output->heading(get_string('category_settings_heading', 'local_cas_help_links'));
+echo $output->action_link('category_analytics.php', get_string('analytics_link_label', 'local_cas_help_links'));
+
 echo $output->cas_category_links($categorySettingsData);
+
+foreach ($coursematchSettingsData as $coursematch) {
+    echo $output->cas_delete_coursematch($coursematch);
+}
+
 echo $output->footer();
