@@ -459,6 +459,7 @@ class local_cas_help_links_utility {
             WHERE t.primary_flag = 1
             AND sec.idnumber IS NOT NULL
             AND sec.idnumber <> ""
+            AND t.status = "enrolled"
             AND cou.cou_number < "5000"
             AND sem.classes_start < ' . self::get_course_start_time() . '
             AND sem.grades_due > ' . self::get_course_end_time() . '
